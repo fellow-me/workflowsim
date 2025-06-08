@@ -1,0 +1,225 @@
+/**
+ * Copyright 2012-2013 University Of Southern California
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+package com.qiujie.entity;
+
+import cn.hutool.log.StaticLog;
+import com.qiujie.planner.WorkflowPlannerAbstract;
+import com.qiujie.util.ExperimentUtil;
+import org.cloudbus.cloudsim.*;
+import org.cloudbus.cloudsim.core.*;
+import org.cloudbus.cloudsim.lists.VmList;
+
+import java.util.*;
+
+/**
+ * WorkflowBroker
+ *
+ * @author qiujie
+ */
+public class WorkflowBroker extends DatacenterBroker {
+
+    private final List<Workflow> workflowList;
+
+    private final WorkflowPlannerAbstract planner;
+
+    public WorkflowBroker(Class<? extends WorkflowPlannerAbstract> clazz) throws Exception {
+        super(WorkflowBroker.class.getSimpleName() + "_#" + CloudSim.getEntityList().size());
+        this.planner = clazz.getDeclaredConstructor().newInstance();
+        this.workflowList = new ArrayList<>();
+    }
+
+    public double getPlnElecCost() {
+        return planner.getElecCost();
+    }
+
+    public double getPlnFinishTime() {
+        return planner.getFinishTime();
+    }
+
+    public void submitWorkflowList(List<Workflow> workflowList) {
+        this.workflowList.addAll(workflowList);
+    }
+
+    public void submitWorkflow(Workflow workflow) {
+        workflowList.add(workflow);
+    }
+
+    /**
+     * Process the ack received due to a request for VM creation.
+     *
+     * @param ev a SimEvent object
+     * @pre ev != null
+     * @post $none
+     */
+    @Override
+    protected void processVmCreateAck(SimEvent ev) {
+        int[] data = (int[]) ev.getData();
+        int datacenterId = data[0];
+        int vmId = data[1];
+        int result = data[2];
+        GuestEntity guest = VmList.getById(getGuestList(), vmId);
+        if (result == CloudSimTags.TRUE) {
+            getVmsToDatacentersMap().put(vmId, datacenterId);
+            getGuestsCreatedList().add(guest);
+            StaticLog.info("{}: {}: {} #{} has been created in Datacenter #{}, {} #{}", CloudSim.clock(), getName(), guest.getClassName(), vmId, datacenterId, guest.getHost().getClassName(), guest.getHost().getId());
+        } else {
+            StaticLog.trace("{}: {}: Creation of {} #{} failed in Datacenter #{}", CloudSim.clock(), getName(), guest.getClassName(), vmId, datacenterId);
+        }
+
+        incrementVmsAcks();
+
+        // all the requested VMs have been created
+        if (getGuestsCreatedList().size() == getGuestList().size() - getVmsDestroyed()) {
+            processPlanning();
+        } else {
+            // all the acks received, but some VMs were not created
+            if (getVmsRequested() == getVmsAcks()) {
+                // find id of the next datacenter that has not been tried
+                for (int nextDatacenterId : getDatacenterIdsList()) {
+                    if (!getDatacenterRequestedIdsList().contains(nextDatacenterId)) {
+                        createVmsInDatacenter(nextDatacenterId);
+                        return;
+                    }
+                }
+
+                // all datacenters already queried
+                if (!getGuestsCreatedList().isEmpty()) { // if some vm were created
+                    processPlanning();
+                } else { // no vms created. abort
+                    StaticLog.info("{}: {}: none of the required VMs could be created. Aborting", CloudSim.clock(), getName());
+                    finishExecution();
+                }
+            }
+        }
+    }
+
+    /**
+     * Process a cloudlet return event.
+     *
+     * @param ev a SimEvent object
+     * @pre ev != $null
+     * @post $none
+     */
+    @Override
+    protected void processCloudletReturn(SimEvent ev) {
+        Cloudlet cloudlet = (Cloudlet) ev.getData();
+        Job job = (Job) cloudlet;
+        getCloudletReceivedList().add(cloudlet);
+        StaticLog.info("{}: {}: {} #{} {} return received, the number of finished Cloudlets is {}", CloudSim.clock(), getName(), cloudlet.getClass().getSimpleName(), cloudlet.getCloudletId(), job.getName(), getCloudletReceivedList().size());
+        cloudletsSubmitted--;
+        if (getCloudletList().isEmpty() && cloudletsSubmitted == 0) { // all cloudlets executed
+            StaticLog.info("{}: {}: All Cloudlets executed. Finishing...", CloudSim.clock(), getName());
+//            clearDatacenters();
+            finishExecution();
+        } else {
+            submitCloudlets();
+        }
+    }
+
+    /**
+     * Submit cloudlets to the created VMs.
+     *
+     * @pre $none
+     * @post $none
+     * @see #submitCloudletList(java.util.List)
+     */
+    @Override
+    protected void submitCloudlets() {
+        List<Cloudlet> successfullySubmitted = new ArrayList<>();
+        for (Cloudlet cloudlet : getCloudletList()) {
+            Job job = (Job) cloudlet;
+            // if its parents have not been finished, skip it
+            if (!new HashSet<>(getCloudletReceivedList()).containsAll(job.getParentList())) {
+                continue;
+            }
+            GuestEntity vm;
+            // if user didn't bind this cloudlet and it has not been executed yet
+            if (cloudlet.getGuestId() == -1) {
+                // randomly select a VM
+                vm = getGuestsCreatedList().get(ExperimentUtil.getRandomValue(getGuestsCreatedList().size()));
+            } else { // submit to the specific vm
+                vm = VmList.getById(getGuestsCreatedList(), cloudlet.getGuestId());
+                if (vm == null) { // vm was not created
+                    vm = VmList.getById(getGuestList(), cloudlet.getGuestId()); // check if exists in the submitted list
+                    if (vm != null) {
+                        StaticLog.info("{}: {}: Postponing execution of cloudlet #{}: bount {} #{} not available", CloudSim.clock(), getName(), cloudlet.getCloudletId(), vm.getClassName(), vm.getId());
+                    } else {
+                        StaticLog.info("{}: {}: Postponing execution of cloudlet #{}: bount guest entity of id {} doesn't exist", CloudSim.clock(), getName(), cloudlet.getCloudletId(), cloudlet.getGuestId());
+                    }
+                    continue;
+                }
+            }
+            StaticLog.info("{}: {}: Sending {} #{} {} to {} #{}", CloudSim.clock(), getName(), cloudlet.getClass().getSimpleName(), cloudlet.getCloudletId(), ((Job) cloudlet).getName(), vm.getClassName(), vm.getId());
+            cloudlet.setGuestId(vm.getId());
+            sendNow(getVmsToDatacentersMap().get(vm.getId()), CloudActionTags.CLOUDLET_SUBMIT, cloudlet);
+            cloudletsSubmitted++;
+            getCloudletSubmittedList().add(cloudlet);
+            successfullySubmitted.add(cloudlet);
+        }
+        // remove submitted cloudlets from waiting list
+        getCloudletList().removeAll(successfullySubmitted);
+    }
+
+
+    /**
+     * Process a request for the characteristics of a Datacenter.
+     *
+     * @param ev a SimEvent object
+     * @pre ev != $null
+     * @post $none
+     */
+    @Override
+    protected void processResourceCharacteristicsRequest(SimEvent ev) {
+        setDatacenterIdsList(CloudSim.getCloudResourceList());
+        setDatacenterCharacteristicsList(new HashMap<>());
+        StaticLog.info("{}: {}: Cloud Resource List received with {} datacenter(s)", CloudSim.clock(), getName(), getDatacenterIdsList().size());
+        for (Integer datacenterId : getDatacenterIdsList()) {
+            sendNow(datacenterId, CloudActionTags.RESOURCE_CHARACTERISTICS, getId());
+        }
+    }
+
+
+    /**
+     * run planning algorithm and pre-assign job to vm
+     */
+    private void processPlanning() {
+        selectHostForLocalInputFile();
+        planner.setWorkflowList(new ArrayList<>(workflowList));
+        planner.setVmList(new ArrayList<>(getGuestsCreatedList()));
+        StaticLog.debug("{}: {}: Create {} Vms {}", CloudSim.clock(), getName(), getGuestsCreatedList().size(), getGuestsCreatedList().stream().map(GuestEntity::getId).sorted().toList());
+        StaticLog.info("{}: {}: Starting planning...", CloudSim.clock(), getName());
+        planner.startPlanning();
+        StaticLog.debug("{}: {}: Job schedule sequence  {}", CloudSim.clock(), getName(), planner.getSequence().stream().map(Cloudlet::getCloudletId).toList());
+        StaticLog.info("{}: {}: Starting submitting...", CloudSim.clock(), getName());
+        submitCloudletList(planner.getSequence());
+        submitCloudlets();
+    }
+
+
+    /**
+     * select host for local input file
+     */
+    private void selectHostForLocalInputFile() {
+        for (Workflow workflow : workflowList) {
+            for (Job job : workflow.getJobList()) {
+                job.setUserId(getId());
+                for (File file : job.getLocalInputFileList()) {
+                    file.setHost(getGuestsCreatedList().get(ExperimentUtil.getRandomValue(getGuestsCreatedList().size())).getHost());
+                }
+            }
+        }
+    }
+}
