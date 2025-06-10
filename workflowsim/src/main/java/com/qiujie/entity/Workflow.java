@@ -38,4 +38,9 @@ public class Workflow {
         this.length = jobList.stream().mapToLong(Job::getLength).sum();
         this.depth = jobList.stream().mapToInt(Job::getDepth).max().orElse(0);
     }
+
+    public boolean isOverdue() {
+        return jobList.stream().anyMatch(job -> job.getExecFinishTime() > deadline);
+    }
+
 }

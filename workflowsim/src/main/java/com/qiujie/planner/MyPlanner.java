@@ -208,10 +208,10 @@ public class MyPlanner extends WorkflowPlannerAbstract {
 
             for (Integer depth : remainingDepthList) {
                 List<Job> jobList = depthJobsMap.get(depth);
-                Job job1 = jobList.get(ExperimentUtil.getRandomValue(jobList.size()));
-                Job job2 = jobList.get(ExperimentUtil.getRandomValue(jobList.size()));
+                Job job1 = ExperimentUtil.getRandomElement(jobList);
+                Job job2 = ExperimentUtil.getRandomElement(jobList);
                 while (job1.equals(job2)) {
-                    job2 = jobList.get(ExperimentUtil.getRandomValue(jobList.size()));
+                    job2 = ExperimentUtil.getRandomElement(jobList);
                 }
                 Collections.swap(sequence, sequence.indexOf(job1), sequence.indexOf(job2));
             }
@@ -285,7 +285,7 @@ public class MyPlanner extends WorkflowPlannerAbstract {
             }
         }
         if (bestFv == null) {
-            DvfsVm vm = (DvfsVm) vmList.get(ExperimentUtil.getRandomValue(vmList.size()));
+            DvfsVm vm = (DvfsVm) ExperimentUtil.getRandomElement(vmList);
             double max = 0;
             for (Job parent : job.getParentList()) {
                 if (!eftMap.containsKey(parent)) {
@@ -294,8 +294,7 @@ public class MyPlanner extends WorkflowPlannerAbstract {
                 max = Math.max(max, eftMap.get(parent) + ExperimentUtil.calculatePredecessorDataTransferTime(job, (Host) vm.getHost(), parent, (Host) solution.getResult().get(parent).getVm().getHost()));
             }
             double readyTime = max + localDataTransferTimeMap.get(job).get(vm);
-            List<Fv> fvList = vm.getFvList();
-            bestFv = fvList.get(ExperimentUtil.getRandomValue(fvList.size()));
+            bestFv = vm.getFvList().getFirst();
             double eft = findEFT(job, bestFv, readyTime, execTimeMap, false, execWindowMap);
             double transferElecCost = ExperimentUtil.calculateElecCost(elecPrice, beginTime, readyTime, bestFv.getPower());
             double execElecCost = ExperimentUtil.calculateElecCost(elecPrice, eft - execTimeMap.get(job).get(bestFv), eft, bestFv.getPower());

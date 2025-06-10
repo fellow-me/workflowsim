@@ -56,19 +56,19 @@ public class ExperimentUtil {
                 .addColumn("Vm_MIPS", list.stream().map(job -> job.getFv() != null ? String.format("%.2f (L%d)", job.getFv().getMips(), job.getFv().getLevel()) : job.getVm().getMips() + "").toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 15))
                 .addColumn("Cloudlet_Length", list.stream().map(Cloudlet::getCloudletLength).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 20, Precision.ZERO))
                 .addColumn("Length", list.stream().map(Job::getLength).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 20, Precision.ZERO))
-                .addColumn("Length_Check", list.stream().map(job -> job.getCloudletLength() - job.getLength() - job.getFv().getMips() * job.getFileTransferTime()).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 20, Precision.ZERO))
+//                .addColumn("Length_Check", list.stream().map(job -> job.getCloudletLength() - job.getLength() - job.getFv().getMips() * job.getFileTransferTime()).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 20, Precision.ZERO))
                 .addColumn("Transfer_Time", list.stream().map(Job::getFileTransferTime).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.TWO))
                 .addColumn("Start_Time", list.stream().map(Cloudlet::getExecStartTime).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.TWO))
                 .addColumn("Finish_Time", list.stream().map(Cloudlet::getExecFinishTime).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.TWO))
                 .addColumn("Process_Time", list.stream().map(Cloudlet::getActualCPUTime).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.TWO))
-                .addColumn("Process_Time_Check", list.stream().map(job -> job.getActualCPUTime() - job.getCloudletLength() / job.getFv().getMips()).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 20, Precision.TWO))
+//                .addColumn("Process_Time_Check", list.stream().map(job -> job.getActualCPUTime() - job.getCloudletLength() / job.getFv().getMips()).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 20, Precision.TWO))
                 .addColumn("Elec_Cost", list.stream().map(Job::getElecCost).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.TWO))
-                .addColumn("Elec_Cost_Check", list.stream().map(job -> {
-                    WorkflowDatacenter dc = (WorkflowDatacenter) job.getFv().getVm().getDatacenter();
-                    return ExperimentUtil.calculateElecCost(dc.getElecPrice(), job.getExecStartTime(), job.getExecFinishTime(), job.getFv().getPower()) - job.getElecCost();
-                }).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 20, Precision.TWO))
+//                .addColumn("Elec_Cost_Check", list.stream().map(job -> {
+//                    WorkflowDatacenter dc = (WorkflowDatacenter) job.getFv().getVm().getDatacenter();
+//                    return ExperimentUtil.calculateElecCost(dc.getElecPrice(), job.getExecStartTime(), job.getExecFinishTime(), job.getFv().getPower()) - job.getElecCost();
+//                }).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 20, Precision.TWO))
                 .addColumn("Retry_Count", list.stream().map(Job::getRetryCount).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.ZERO))
-                .addColumn("Count", list.stream().map(Job::getCount).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.ZERO))
+//                .addColumn("Count", list.stream().map(Job::getCount).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.ZERO))
                 .addColumn("Depth", list.stream().map(Job::getDepth).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 5, Precision.ZERO));
         Table table = builder.build();
         System.out.println(table);
@@ -85,18 +85,24 @@ public class ExperimentUtil {
         List<SimStarter> sortByPlnFinishTime = list.stream().sorted(Comparator.comparingDouble(SimStarter::getPlnFinishTime)).toList();
         List<SimStarter> sortBySimElecCost = list.stream().sorted(Comparator.comparingDouble(SimStarter::getSimElecCost)).toList();
         List<SimStarter> sortBySimFinishTime = list.stream().sorted(Comparator.comparingDouble(SimStarter::getSimFinishTime)).toList();
-        List<SimStarter> sortByRetryCount = list.stream().sorted(Comparator.comparingDouble(SimStarter::getRetryCount)).toList();
+        List<SimStarter> sortByRetryCount = list.stream().sorted(Comparator.comparingInt(SimStarter::getRetryCount)).toList();
+        List<SimStarter> sortByDcCount = list.stream().sorted(Comparator.comparingInt(SimStarter::getDcCount)).toList();
+        List<SimStarter> sortByVmCount = list.stream().sorted(Comparator.comparingInt(SimStarter::getVmCount)).toList();
+        List<SimStarter> sortByOverdueCount = list.stream().sorted(Comparator.comparingInt(SimStarter::getOverdueCount)).toList();
         List<SimStarter> sortByRuntime = list.stream().sorted(Comparator.comparingDouble(SimStarter::getRuntime)).toList();
         System.out.println();
         System.out.println("                                                  " + str + " Experiment Result");
         Table.Builder builder = new Table.Builder("idx", IntStream.rangeClosed(0, list.size() - 1).boxed().toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 6, Precision.ZERO))
                 .addColumn("Name", list.stream().map(SimStarter::getName).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 50))
-                .addColumn("Pln_Elec_Cost", list.stream().map(runner -> String.format("%.2f (%d)", runner.getPlnElecCost(), sortByPlnElecCost.indexOf(runner))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 30))
-                .addColumn("Sim_Elec_Cost", list.stream().map(runner -> String.format("%.2f (%d)", runner.getSimElecCost(), sortBySimElecCost.indexOf(runner))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 30))
-                .addColumn("Pln_Finish_Time", list.stream().map(runner -> String.format("%.2f (%d)", runner.getPlnFinishTime(), sortByPlnFinishTime.indexOf(runner))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 30))
-                .addColumn("Sim_Finish_Time", list.stream().map(runner -> String.format("%.2f (%d)", runner.getSimFinishTime(), sortBySimFinishTime.indexOf(runner))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 30))
-                .addColumn("Retry_Count", list.stream().map(runner -> String.format("%.2f (%d)", runner.getRetryCount(), sortByRetryCount.indexOf(runner))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 20))
-                .addColumn("Runtime", list.stream().map(runner -> String.format("%.2f (%d)", runner.getRuntime(), sortByRuntime.indexOf(runner))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 20));
+                .addColumn("Pln_Elec_Cost", list.stream().map(starter -> String.format("%.2f (%d)", starter.getPlnElecCost(), sortByPlnElecCost.indexOf(starter))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 20))
+                .addColumn("Sim_Elec_Cost", list.stream().map(starter -> String.format("%.2f (%d)", starter.getSimElecCost(), sortBySimElecCost.indexOf(starter))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 20))
+                .addColumn("Pln_Finish_Time", list.stream().map(starter -> String.format("%.2f (%d)", starter.getPlnFinishTime(), sortByPlnFinishTime.indexOf(starter))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 20))
+                .addColumn("Sim_Finish_Time", list.stream().map(starter -> String.format("%.2f (%d)", starter.getSimFinishTime(), sortBySimFinishTime.indexOf(starter))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 20))
+                .addColumn("Retry_Count", list.stream().map(starter -> String.format("%d (%d)", starter.getRetryCount(), sortByRetryCount.indexOf(starter))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 20))
+                .addColumn("Dc_Count", list.stream().map(starter -> String.format("%d (%d)", starter.getDcCount(), sortByDcCount.indexOf(starter))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 20))
+                .addColumn("Vm_Count", list.stream().map(starter -> String.format("%d (%d)", starter.getVmCount(), sortByVmCount.indexOf(starter))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 20))
+                .addColumn("Overdue_Count",  list.stream().map(starter -> String.format("%d (%d)", starter.getOverdueCount(), sortByOverdueCount.indexOf(starter))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 20))
+                .addColumn("Runtime", list.stream().map(starter -> String.format("%.2f (%d)", starter.getRuntime(), sortByRuntime.indexOf(starter))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 20));
         Table table = builder.build();
         System.out.println(table);
         System.out.println();
@@ -265,11 +271,16 @@ public class ExperimentUtil {
 
     /**
      * @param maxValue
-     * @return 返回一个随机整数，其取值范围为[0, maxValue)
+     * @Returns a random integer in the range [0, maxValue).
      */
     public static int getRandomValue(final int maxValue) {
         final double uniform = RANDOM.sample();
         return (int) (uniform >= 1 ? uniform % maxValue : uniform * maxValue);
+    }
+
+
+    public static <T> T getRandomElement(List<T> list) {
+        return list.get(getRandomValue(list.size()));
     }
 
 

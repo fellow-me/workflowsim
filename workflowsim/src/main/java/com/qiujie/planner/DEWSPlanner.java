@@ -190,12 +190,12 @@ public class DEWSPlanner extends WorkflowPlannerAbstract {
             // VND start
             sequence = new ArrayList<>(bestSolution.getSequence());
             for (int j = 0; j < k; j++) {
-                int depth = depthList.get(ExperimentUtil.getRandomValue(depthList.size()));
+                int depth = ExperimentUtil.getRandomElement(depthList);
                 List<Job> jobList = depthJobsMap.get(depth);
-                Job job1 = jobList.get(ExperimentUtil.getRandomValue(jobList.size()));
-                Job job2 = jobList.get(ExperimentUtil.getRandomValue(jobList.size()));
+                Job job1 = ExperimentUtil.getRandomElement(jobList);
+                Job job2 = ExperimentUtil.getRandomElement(jobList);
                 while (job1.equals(job2)) {
-                    job2 = jobList.get(ExperimentUtil.getRandomValue(jobList.size()));
+                    job2 = ExperimentUtil.getRandomElement(jobList);
                 }
                 Collections.swap(sequence, sequence.indexOf(job1), sequence.indexOf(job2));
             }
@@ -234,13 +234,11 @@ public class DEWSPlanner extends WorkflowPlannerAbstract {
         double bestElecCost = Double.MAX_VALUE;
         int Rmax = 3;
         int r = 0;
-        List<Double> elecPrice = null;
-        List<Vm> vmList = null;
         while (r < Rmax) {
             Datacenter datacenter = selectDC(beginTime, job, r);
             WorkflowDatacenter dc = (WorkflowDatacenter) datacenter;
-            elecPrice = dc.getElecPrice();
-            vmList = dcVmsMap.get(datacenter);
+            List<Double> elecPrice = dc.getElecPrice();
+            List<Vm> vmList = dcVmsMap.get(datacenter);
             Fv betterFv = null;
             double betterReadyTime = 0;
             double betterEft = 0;
@@ -340,7 +338,9 @@ public class DEWSPlanner extends WorkflowPlannerAbstract {
 
         }
         if (bestFv == null) {
-            DvfsVm vm = (DvfsVm) vmList.get(ExperimentUtil.getRandomValue(vmList.size()));
+            WorkflowDatacenter datacenter = (WorkflowDatacenter) ExperimentUtil.getRandomElement(dcVmsMap.keySet().stream().toList());
+            List<Double> elecPrice = datacenter.getElecPrice();
+            DvfsVm vm = (DvfsVm) ExperimentUtil.getRandomElement(dcVmsMap.get(datacenter));
             double max = 0;
             for (Job parent : job.getParentList()) {
                 if (!eftMap.containsKey(parent)) {
@@ -349,8 +349,7 @@ public class DEWSPlanner extends WorkflowPlannerAbstract {
                 max = Math.max(max, eftMap.get(parent) + ExperimentUtil.calculatePredecessorDataTransferTime(job, (Host) vm.getHost(), parent, (Host) solution.getResult().get(parent).getVm().getHost()));
             }
             double readyTime = max + localDataTransferTimeMap.get(job).get(vm);
-            List<Fv> fvList = vm.getFvList();
-            bestFv = fvList.get(ExperimentUtil.getRandomValue(fvList.size()));
+            bestFv = vm.getFvList().getFirst();
             double eft = findEFT(job, bestFv, readyTime, execTimeMap, false, execWindowMap);
             double transferElecCost = ExperimentUtil.calculateElecCost(elecPrice, beginTime, readyTime, bestFv.getPower());
             double execElecCost = ExperimentUtil.calculateElecCost(elecPrice, eft - execTimeMap.get(job).get(bestFv), eft, bestFv.getPower());
@@ -374,7 +373,7 @@ public class DEWSPlanner extends WorkflowPlannerAbstract {
         Datacenter bestDC = null;
         List<Datacenter> datacenterList = dcVmsMap.keySet().stream().toList();
         if (index == 0) {
-            bestDC = datacenterList.get(ExperimentUtil.getRandomValue(datacenterList.size()));
+            bestDC = ExperimentUtil.getRandomElement(datacenterList);
         } else if (index == 1) {
             double minPrice = Double.MAX_VALUE;
             for (Datacenter datacenter : datacenterList) {
@@ -390,9 +389,9 @@ public class DEWSPlanner extends WorkflowPlannerAbstract {
         } else {
             List<Datacenter> localDataDacenterList = job.getLocalInputFileList().stream().map(file -> file.getHost().getDatacenter()).distinct().toList();
             if (localDataDacenterList.isEmpty()) {
-                bestDC = datacenterList.get(ExperimentUtil.getRandomValue(datacenterList.size()));
+                bestDC = ExperimentUtil.getRandomElement(datacenterList);
             } else {
-                bestDC = localDataDacenterList.get(ExperimentUtil.getRandomValue(localDataDacenterList.size()));
+                bestDC = ExperimentUtil.getRandomElement(localDataDacenterList);
             }
         }
 

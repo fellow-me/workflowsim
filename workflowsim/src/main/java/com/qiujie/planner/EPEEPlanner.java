@@ -281,6 +281,8 @@ public class EPEEPlanner extends WorkflowPlannerAbstract {
         }
 
         StaticLog.debug(String.format("%.2f: %s: Deadline: %.2f, %s", CloudSim.clock(), workflow.getName(), workflow.getDeadline(), solution));
+
+
         if (bestSolution == null) {
             throw new IllegalStateException(String.format(
                     "No feasible solution found for workflow #%d (%s). Consider relaxing SLACK_TIME_FACTOR (%.2f) or lowering RELIABILITY_FACTOR (%.4f).",
@@ -348,10 +350,11 @@ public class EPEEPlanner extends WorkflowPlannerAbstract {
                     betterFv = fv;
                 }
                 double power = betterFv.getPower();
-                double transferElecCost = job.getParentList().stream().mapToDouble(parent ->
+                double localDataTransferElecCost = ExperimentUtil.calculateElecCost(elecPrice, readyTime - localDataTransferTimeMap.get(job).get(dvfsVm), readyTime, power);
+                double predDatatransferElecCost = job.getParentList().stream().mapToDouble(parent ->
                         ExperimentUtil.calculateElecCost(elecPrice, eftMap.get(parent), eftMap.get(parent) + predecessorDataTransferTimeMap.get(parent), power)).sum();
                 double execElecCost = ExperimentUtil.calculateElecCost(elecPrice, startTime, startTime + execTimeMap.get(job).get(betterFv), betterFv.getPower());
-                double elecCost = transferElecCost + execElecCost;
+                double elecCost = localDataTransferElecCost + predDatatransferElecCost + execElecCost;
                 if (elecCost < bestElecCost) {
                     bestFv = betterFv;
                     bestReadyTime = readyTime;
@@ -361,26 +364,27 @@ public class EPEEPlanner extends WorkflowPlannerAbstract {
             }
         }
         if (bestFv == null) {
-            DvfsVm dvfsVm = (DvfsVm) vmList.get(ExperimentUtil.getRandomValue(vmList.size()));
+            DvfsVm vm = (DvfsVm) ExperimentUtil.getRandomElement(vmList);
             double max = 0;
             Map<Job, Double> predecessorDataTransferTimeMap = new HashMap<>();
             for (Job parent : job.getParentList()) {
                 if (!eftMap.containsKey(parent)) {
                     throw new IllegalStateException(String.format("Parent job #%d eft has not been calculated!", parent.getCloudletId()));
                 }
-                double predecessorDataTransferTime = calculatePredecessorDataTransferTime(job, dvfsVm, parent, solution.getResult().get(parent).getVm());
+                double predecessorDataTransferTime = calculatePredecessorDataTransferTime(job, vm, parent, solution.getResult().get(parent).getVm());
                 predecessorDataTransferTimeMap.put(parent, predecessorDataTransferTime);
                 max = Math.max(max, eftMap.get(parent) + predecessorDataTransferTime);
             }
-            double readyTime = max + localDataTransferTimeMap.get(job).get(dvfsVm);
-            List<Fv> fvList = dvfsVm.getFvList();
-            bestFv = fvList.get(ExperimentUtil.getRandomValue(fvList.size()));
+            double readyTime = max + localDataTransferTimeMap.get(job).get(vm);
+            bestFv = vm.getFvList().getFirst();
             double eft = findEFT(job, bestFv, readyTime, execTimeMap, false, execWindowMap);
             double power = bestFv.getPower();
-            double transferElecCost = job.getParentList().stream().mapToDouble(parent -> ExperimentUtil.calculateElecCost(elecPrice, eftMap.get(parent), eftMap.get(parent) + predecessorDataTransferTimeMap.get(parent), power)).sum();
+            double localDataTransferElecCost = ExperimentUtil.calculateElecCost(elecPrice, readyTime - localDataTransferTimeMap.get(job).get(vm), readyTime, power);
+            double predDataTransferElecCost = job.getParentList().stream().mapToDouble(parent ->
+                    ExperimentUtil.calculateElecCost(elecPrice, eftMap.get(parent), eftMap.get(parent) + predecessorDataTransferTimeMap.get(parent), power)).sum();
             double execElecCost = ExperimentUtil.calculateElecCost(elecPrice, eft - execTimeMap.get(job).get(bestFv), eft, bestFv.getPower());
             bestReadyTime = readyTime;
-            bestElecCost = transferElecCost + execElecCost;
+            bestElecCost = localDataTransferElecCost + predDataTransferElecCost + execElecCost;
         }
         eftMap.put(job, findEFT(job, bestFv, bestReadyTime, execTimeMap, true, execWindowMap));
         solution.bindJobToFv(job, bestFv);
@@ -425,7 +429,7 @@ public class EPEEPlanner extends WorkflowPlannerAbstract {
     public double calculateLocalDataTransferTime(Job job, Vm vm) {
         return job.getLocalInputFileList().stream().mapToDouble(file -> {
             List<Vm> fileVmList = getVmList().stream().filter(v -> v.getHost().getId() == file.getHost().getId()).toList();
-            Vm fileVm = fileVmList.get(ExperimentUtil.getRandomValue(fileVmList.size()));
+            Vm fileVm = ExperimentUtil.getRandomElement(fileVmList);
             // No data transfer time if the job and its parent are on the same vm.
             if (vm.equals(fileVm)) return 0;
             return vm.getDatacenter().getId() == fileVm.getDatacenter().getId() ? file.getSize() / INTRA_BANDWIDTH : file.getSize() / INTER_BANDWIDTH;

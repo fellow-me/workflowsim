@@ -1,23 +1,10 @@
-/**
- * Copyright 2012-2013 University Of Southern California
- * <p>
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
+
 package com.qiujie.entity;
 
 import cn.hutool.log.StaticLog;
 import com.qiujie.planner.WorkflowPlannerAbstract;
 import com.qiujie.util.ExperimentUtil;
+import lombok.Getter;
 import org.cloudbus.cloudsim.*;
 import org.cloudbus.cloudsim.core.*;
 import org.cloudbus.cloudsim.lists.VmList;
@@ -31,6 +18,7 @@ import java.util.*;
  */
 public class WorkflowBroker extends DatacenterBroker {
 
+    @Getter
     private final List<Workflow> workflowList;
 
     private final WorkflowPlannerAbstract planner;
@@ -149,7 +137,7 @@ public class WorkflowBroker extends DatacenterBroker {
             // if user didn't bind this cloudlet and it has not been executed yet
             if (cloudlet.getGuestId() == -1) {
                 // randomly select a VM
-                vm = getGuestsCreatedList().get(ExperimentUtil.getRandomValue(getGuestsCreatedList().size()));
+                vm = ExperimentUtil.getRandomElement(getGuestsCreatedList());
             } else { // submit to the specific vm
                 vm = VmList.getById(getGuestsCreatedList(), cloudlet.getGuestId());
                 if (vm == null) { // vm was not created
@@ -217,7 +205,7 @@ public class WorkflowBroker extends DatacenterBroker {
             for (Job job : workflow.getJobList()) {
                 job.setUserId(getId());
                 for (File file : job.getLocalInputFileList()) {
-                    file.setHost(getGuestsCreatedList().get(ExperimentUtil.getRandomValue(getGuestsCreatedList().size())).getHost());
+                    file.setHost(ExperimentUtil.getRandomElement(getGuestsCreatedList()).getHost());
                 }
             }
         }

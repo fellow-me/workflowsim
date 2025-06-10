@@ -34,7 +34,7 @@ public class Constants {
     public static final double COST_PER_STORAGE = 0.001; // the cost of using storage in this resource
     public static final double COST_PER_BW = 0.1; // the cost of using bw in this resource
 
-    public static final int HOST_RAM = 2048; // MEGA
+    public static final int HOST_RAM = 4096; // MEGA
     public static final long HOST_BW = 10000;
     public static final long HOST_STORAGE = 1000000; // MEGA
 

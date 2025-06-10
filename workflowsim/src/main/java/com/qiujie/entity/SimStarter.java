@@ -12,6 +12,7 @@ import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.distributions.ContinuousDistribution;
 
+import java.lang.reflect.Constructor;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
@@ -40,7 +41,7 @@ public class SimStarter {
     private WorkflowBroker broker;
 
 
-    public SimStarter(ContinuousDistribution random, List<String> daxPathList, Class<? extends WorkflowPlannerAbstract> plannerClass, Class<? extends WorkflowComparatorInterface> comparatorClass, boolean ascending) {
+    public SimStarter(ContinuousDistribution random, List<String> daxPathList, Class<? extends WorkflowPlannerAbstract> plannerClass, Class<? extends WorkflowComparatorInterface> comparatorClass, boolean ascending) throws Exception {
         this.id = nextId.getAndIncrement();
         setName(plannerClass.getSimpleName(), comparatorClass.getSimpleName(), ascending ? "asc" : "desc");
         this.random = random;
@@ -51,19 +52,15 @@ public class SimStarter {
         start();
     }
 
-    public SimStarter(ContinuousDistribution random, List<String> daxPathList, Class<? extends WorkflowPlannerAbstract> plannerClass) {
+    public SimStarter(ContinuousDistribution random, List<String> daxPathList, Class<? extends WorkflowPlannerAbstract> plannerClass) throws Exception {
         this(random, daxPathList, plannerClass, DefaultComparator.class, true);
     }
 
 
-    private void start() {
+    private void start() throws Exception {
         System.out.printf("Simulation %s starting...\n", name);
         long start = System.currentTimeMillis();
-        try {
-            run();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        run();
         long end = System.currentTimeMillis();
         this.runtime = (end - start) / 1000.0;
         System.out.printf("Simulation %s run %.2fs\n", name, runtime);
@@ -112,11 +109,11 @@ public class SimStarter {
 
 
     public double getSimFinishTime() {
-        return broker.getCloudletReceivedList().stream().mapToDouble(Cloudlet::getExecFinishTime).max().getAsDouble();
+        return broker.getCloudletReceivedList().getLast().getExecFinishTime();
     }
 
-    public double getRetryCount() {
-        return broker.getCloudletReceivedList().stream().mapToDouble(cloudlet -> ((Job) cloudlet).getRetryCount()).sum();
+    public int getRetryCount() {
+        return broker.getCloudletReceivedList().stream().mapToInt(cloudlet -> ((Job) cloudlet).getRetryCount()).sum();
     }
 
     public void printSimResult() {
@@ -134,6 +131,18 @@ public class SimStarter {
 
     public double getPlnFinishTime() {
         return broker.getPlnFinishTime();
+    }
+
+    public int getDcCount() {
+        return (int) broker.getCloudletReceivedList().stream().mapToInt(Cloudlet::getResourceId).distinct().count();
+    }
+
+    public int getVmCount() {
+        return (int) broker.getCloudletReceivedList().stream().mapToInt(Cloudlet::getGuestId).distinct().count();
+    }
+
+    public int getOverdueCount() {
+        return (int) broker.getWorkflowList().stream().filter(Workflow::isOverdue).count();
     }
 
 

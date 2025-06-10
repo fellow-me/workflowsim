@@ -246,10 +246,10 @@ public class ECWSDPlanner extends WorkflowPlannerAbstract {
             }
             for (Job job : remainingCandiateJobList) {
                 List<Job> childList = job.getChildList();
-                Job child1 = childList.get(ExperimentUtil.getRandomValue(childList.size()));
-                Job child2 = childList.get(ExperimentUtil.getRandomValue(childList.size()));
+                Job child1 = ExperimentUtil.getRandomElement(childList);
+                Job child2 = ExperimentUtil.getRandomElement(childList);
                 while (child1.equals(child2)) {
-                    child2 = childList.get(ExperimentUtil.getRandomValue(childList.size()));
+                    child2 = ExperimentUtil.getRandomElement(childList);
                 }
                 Collections.swap(sequence, sequence.indexOf(child1), sequence.indexOf(child2));
             }

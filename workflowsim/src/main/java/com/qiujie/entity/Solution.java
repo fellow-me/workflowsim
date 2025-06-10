@@ -66,10 +66,10 @@ public class Solution {
     @Override
     public String toString() {
         String mapStr = getResult().entrySet().stream()
-                .map(e -> String.format("%d → Vm #%d (%.2f MIPS)",
+                .map(e -> String.format("%d → %d (L%d)",
                         e.getKey().getCloudletId(),
                         e.getValue().getVm().getId(),
-                        e.getValue().getMips()))
+                        e.getValue().getLevel()))
                 .collect(Collectors.joining(", "));
 
         return String.format(
