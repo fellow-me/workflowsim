@@ -139,11 +139,7 @@ public class HEFTPlanner extends WorkflowPlannerAbstract {
 
 
     /**
-     * 分配任务
-     *
-     * @param job      任务
-     * @param solution 解
-     * @return 电费
+     * @return electric cost
      */
     private double allocateJob(Job job, Solution solution, Map<Vm, List<ExecWindow>> execWindowMap) {
         double beginTime = job.getParentList().isEmpty() ? 0 : job.getParentList().stream().mapToDouble(eftMap::get).min().getAsDouble();

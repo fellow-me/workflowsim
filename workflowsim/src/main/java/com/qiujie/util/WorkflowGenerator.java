@@ -30,7 +30,7 @@ public class WorkflowGenerator {
 
 
     /**
-     * 生成指定任务数量的工作流
+     * Generates a workflow with the specified number of jobs
      *
      * @param basePath
      * @param clazz
@@ -48,7 +48,7 @@ public class WorkflowGenerator {
 
 
     /**
-     * 生成指定任务数量和工作流数量的工作流集合
+     * Generates multiple workflow instances with specified job counts and instance counts
      *
      * @param basePath
      * @param clazz

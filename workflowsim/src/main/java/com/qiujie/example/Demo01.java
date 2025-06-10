@@ -7,6 +7,7 @@ import com.qiujie.entity.Workflow;
 import com.qiujie.entity.WorkflowBroker;
 import com.qiujie.planner.ECWSDPlanner;
 import com.qiujie.planner.HEFTPlanner;
+import com.qiujie.planner.RandomPlanner;
 import com.qiujie.util.ExperimentUtil;
 import com.qiujie.util.Log;
 import com.qiujie.util.WorkflowParser;
@@ -37,9 +38,9 @@ public class Demo01 {
 //            String daxPath = "data/dax/Inspiral_100.xml";
 //            String daxPath = "data/dax/Epigenomics_997.xml";
 //        String daxPath = "data/dax/Montage_25.xml";
-//            String daxPath = "data/dax/CyberShake_100.xml";
+            String daxPath = "data/dax/CyberShake_100.xml";
 //            String daxPath = "data/dax/Epigenomics_46.xml";
-            String daxPath = "data/dax/Montage_50.xml";
+//            String daxPath = "data/dax/Montage_50.xml";
 //        String daxPath = "data/dax/Montage_1000.xml";
 //        String daxPath = "data/dax/Montage_50.xml";
 //            String daxPath = "data/dax/Montage_25.xml";
@@ -53,7 +54,7 @@ public class Demo01 {
         // create datacenters
         List<Datacenter> datacenterList = ExperimentUtil.createDatacenters();
         // create broker
-        WorkflowBroker broker = new WorkflowBroker(HEFTPlanner.class);
+        WorkflowBroker broker = new WorkflowBroker(RandomPlanner.class);
         // submit vms
         List<Vm> vmList = ExperimentUtil.createVms(broker.getId());
         broker.submitGuestList(vmList);

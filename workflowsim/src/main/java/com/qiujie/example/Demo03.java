@@ -2,6 +2,7 @@
 package com.qiujie.example;
 
 import ch.qos.logback.classic.Level;
+import com.qiujie.entity.ClockModifier;
 import com.qiujie.entity.Job;
 import com.qiujie.entity.Workflow;
 import com.qiujie.entity.WorkflowBroker;
@@ -28,10 +29,10 @@ public class Demo03 {
     public static void main(String[] args) throws Exception {
         long send = System.currentTimeMillis();
         RANDOM = new UniformDistr(0, 1, send);
-//        ClockModifier.modifyClockMethod();
+        ClockModifier.modifyClockMethod();
         org.cloudbus.cloudsim.Log.disable();
-        CloudSim.init(USERS, Calendar.getInstance(), TRACE_FLAG);
-        Log.setLevel(Level.INFO);
+        CloudSim.init(2, Calendar.getInstance(), TRACE_FLAG);
+        Log.setLevel(Level.TRACE);
         List<String> daxPathList = List.of(
 //                "data/dax/Inspiral_1000.xml",
 //                "data/dax/Inspiral_100.xml",
@@ -64,6 +65,8 @@ public class Demo03 {
                 "data/dax/Montage_50.xml"
         );
 
+        VMS = 100;
+
         List<Datacenter> datacenterList = ExperimentUtil.createDatacenters();
 
         WorkflowBroker broker = new WorkflowBroker(HEFTPlanner.class);
@@ -81,12 +84,14 @@ public class Demo03 {
         CloudSim.startSimulation();
 
         List<Job> cloudletReceivedList = broker.getCloudletReceivedList();
-        ExperimentUtil.printSimResult(cloudletReceivedList);
+        ExperimentUtil.printSimResult(cloudletReceivedList,  broker.getName());
         ExperimentUtil.generateSimGanttData(cloudletReceivedList, broker.getName());
 
         List<Job> cloudletReceivedList1 = broker1.getCloudletReceivedList();
-        ExperimentUtil.printSimResult(cloudletReceivedList1);
+        ExperimentUtil.printSimResult(cloudletReceivedList1,  broker1.getName());
         ExperimentUtil.generateSimGanttData(cloudletReceivedList1, broker1.getName());
+
+
 
         String className = new Object() {
         }.getClass().getEnclosingClass().getSimpleName();

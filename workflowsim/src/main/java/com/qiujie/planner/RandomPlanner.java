@@ -149,7 +149,7 @@ public class RandomPlanner extends WorkflowPlannerAbstract {
             max = Math.max(max, eftMap.get(parent) + ExperimentUtil.calculatePredecessorDataTransferTime(job, (Host) dvfsVm.getHost(), parent, (Host) solution.getResult().get(parent).getVm().getHost()));
         }
         double readyTime = max + localDataTransferTimeMap.get(job).get(dvfsVm);
-        Fv fv = dvfsVm.getFvList().getFirst();
+        Fv fv = ExperimentUtil.getRandomElement(dvfsVm.getFvList());
         double eft = findEFT(job, fv, readyTime, execTimeMap, true, execWindowMap);
         WorkflowDatacenter dc = (WorkflowDatacenter) fv.getVm().getDatacenter();
         List<Double> elecPrice = dc.getElecPrice();
