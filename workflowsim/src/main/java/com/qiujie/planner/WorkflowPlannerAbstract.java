@@ -58,7 +58,7 @@ public abstract class WorkflowPlannerAbstract {
     }
 
 
-    public void startPlanning() {
+    public void start() {
         StaticLog.info("{}: {} start planning {} Workflows, a total of {} Jobs...", CloudSim.clock(), getClass().getSimpleName(), getWorkflowList().size(), getWorkflowList().stream().mapToInt(Workflow::getJobNum).sum());
         long start = System.currentTimeMillis();
         run();

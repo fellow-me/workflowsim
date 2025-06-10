@@ -189,7 +189,7 @@ public class WorkflowBroker extends DatacenterBroker {
         planner.setVmList(new ArrayList<>(getGuestsCreatedList()));
         StaticLog.debug("{}: {}: Create {} Vms {}", CloudSim.clock(), getName(), getGuestsCreatedList().size(), getGuestsCreatedList().stream().map(GuestEntity::getId).sorted().toList());
         StaticLog.info("{}: {}: Starting planning...", CloudSim.clock(), getName());
-        planner.startPlanning();
+        planner.start();
         StaticLog.debug("{}: {}: Job schedule sequence  {}", CloudSim.clock(), getName(), planner.getSequence().stream().map(Cloudlet::getCloudletId).toList());
         StaticLog.info("{}: {}: Starting submitting...", CloudSim.clock(), getName());
         submitCloudletList(planner.getSequence());

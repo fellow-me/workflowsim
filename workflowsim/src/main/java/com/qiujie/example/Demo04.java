@@ -26,7 +26,7 @@ public class Demo04 {
     public static void main(String[] args) throws Exception {
         long seed = System.currentTimeMillis();
         ClockModifier.modifyClockMethod();
-//        org.cloudbus.cloudsim.Log.disable();
+        org.cloudbus.cloudsim.Log.disable();
         Log.setLevel(Level.ALL);
         List<String> daxPathList = List.of(
 //                "data/dax/Inspiral_1000.xml",
@@ -46,13 +46,11 @@ public class Demo04 {
 //                "data/dax/Montage_1000.xml",
                 "data/dax/Montage_100.xml");
 
-        DC_SCHEDULING_INTERVAL = 1;
 
         VMS = 50;
 
         LENGTH_FACTOR = 1e5;
-        RELIABILITY_FACTOR = 1e-4;
-        SLACK_TIME_FACTOR = 2;
+
 
 
         SimStarter simStarter = new SimStarter(new UniformDistr(0, 1, seed), daxPathList, HEFTPlanner.class, JobNumComparator.class, true);

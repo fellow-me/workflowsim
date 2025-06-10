@@ -6,6 +6,7 @@ import com.qiujie.entity.Job;
 import com.qiujie.entity.Workflow;
 import com.qiujie.entity.WorkflowBroker;
 import com.qiujie.planner.ECWSDPlanner;
+import com.qiujie.planner.HEFTPlanner;
 import com.qiujie.util.ExperimentUtil;
 import com.qiujie.util.Log;
 import com.qiujie.util.WorkflowParser;
@@ -52,7 +53,7 @@ public class Demo01 {
         // create datacenters
         List<Datacenter> datacenterList = ExperimentUtil.createDatacenters();
         // create broker
-        WorkflowBroker broker = new WorkflowBroker(ECWSDPlanner.class);
+        WorkflowBroker broker = new WorkflowBroker(HEFTPlanner.class);
         // submit vms
         List<Vm> vmList = ExperimentUtil.createVms(broker.getId());
         broker.submitGuestList(vmList);

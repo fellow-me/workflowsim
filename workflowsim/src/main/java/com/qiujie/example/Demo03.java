@@ -6,6 +6,7 @@ import com.qiujie.entity.Job;
 import com.qiujie.entity.Workflow;
 import com.qiujie.entity.WorkflowBroker;
 import com.qiujie.planner.ECWSDPlanner;
+import com.qiujie.planner.HEFTPlanner;
 import com.qiujie.util.ExperimentUtil;
 import com.qiujie.util.Log;
 import com.qiujie.util.WorkflowParser;
@@ -65,13 +66,13 @@ public class Demo03 {
 
         List<Datacenter> datacenterList = ExperimentUtil.createDatacenters();
 
-        WorkflowBroker broker = new WorkflowBroker(ECWSDPlanner.class);
+        WorkflowBroker broker = new WorkflowBroker(HEFTPlanner.class);
         List<Vm> vmList = ExperimentUtil.createVms(broker.getId());
         broker.submitGuestList(vmList);
         List<Workflow> workflowList = daxPathList.stream().map(WorkflowParser::parse).toList();
         broker.submitWorkflowList(workflowList);
 
-        WorkflowBroker broker1 = new WorkflowBroker(ECWSDPlanner.class);
+        WorkflowBroker broker1 = new WorkflowBroker(HEFTPlanner.class);
         List<Vm> vmList1 = ExperimentUtil.createVms(broker1.getId());
         broker1.submitGuestList(vmList1);
         List<Workflow> workflowList1 = daxPathList1.stream().map(WorkflowParser::parse).toList();

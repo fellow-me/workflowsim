@@ -15,9 +15,9 @@ import static com.qiujie.Constants.MAX_RETRY_COUNT;
 
 
 /**
+ * Algorithm comparison
  * @author qiujie
  *
- * Algorithm comparison
  */
 public class Demo05 extends ExperimentStarter {
 
@@ -48,10 +48,8 @@ public class Demo05 extends ExperimentStarter {
         MAX_RETRY_COUNT = 10;
 
         List<SimStarter> simStarterList = List.of(
-                new SimStarter(new UniformDistr(0, 1, seed), daxPathList, ECWSDPlanner.class)
-                , new SimStarter(new UniformDistr(0, 1, seed), daxPathList, HEFTPlanner.class)
-                , new SimStarter(new UniformDistr(0, 1, seed), daxPathList, EPEEPlanner.class)
-                , new SimStarter(new UniformDistr(0, 1, seed), daxPathList, DEWSPlanner.class)
+                new SimStarter(new UniformDistr(0, 1, seed), daxPathList, HEFTPlanner.class)
+                ,new SimStarter(new UniformDistr(0, 1, seed), daxPathList, RandomPlanner.class)
         );
 
         simStarterList.forEach(SimStarter::printSimResult);
