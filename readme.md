@@ -8,11 +8,11 @@
 - Supports the generation of various types of workflow instances, such as Montage, CyberShake, and more. Additionally, the number of jobs in a workflow can be customized.
 - Supports workflow parsing and displays the workflow structure graph.
 
-<img src="./assets/README-1749611130549.png" width="600"/>
+![](./assets/README-1749611130549.png)
 
 - Supports visualization of simulation results, showing the entire simulation process as a Gantt chart.
 
-<img src="./assets/README-1749611641222.png" width="600"/>
+![](./assets/README-1749611641222.png)
 
 - Supports multiple levels of logging.
 - Supports printing of simulation and experimental results to the console.
