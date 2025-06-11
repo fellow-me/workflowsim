@@ -1,11 +1,11 @@
 <template>
-  <div class="dependency-graph">
+  <div class="structure-graph">
     <div class="header">
       <div class="controls">
         <div class="file-input">
           <label for="xmlFile">
             <span class="icon">📁</span>
-            <span>选择XML文件</span>
+            <span>select dax file</span>
           </label>
           <input
               type="file"
@@ -15,11 +15,11 @@
           <span class="file-name">{{ fileName }}</span>
         </div>
         <div class="buttons">
-          <button @click="applyHierarchicalLayout">层级布局</button>
-          <button @click="applyCircleLayout">圆形布局</button>
-          <button @click="fitGraph">适应视图</button>
-          <button @click="zoomIn">放大</button>
-          <button @click="zoomOut">缩小</button>
+          <button @click="applyHierarchicalLayout">hierarchical layout</button>
+          <button @click="applyCircleLayout">circle layout</button>
+          <button @click="fitGraph">fit graph</button>
+          <button @click="zoomIn">zoom in</button>
+          <button @click="zoomOut">zoom out</button>
         </div>
       </div>
     </div>
@@ -36,7 +36,7 @@ import {
 } from '@maxgraph/core';
 
 export default {
-  name: 'TaskDependencyGraph',
+  name: 'StructureGraph',
   data() {
     return {
       graph: null,
@@ -65,7 +65,7 @@ export default {
       this.graph = new Graph(container);
 
       this.graph.setPanning(true); // Enable panning
-      this.graph.center(true,true); // 图形居中
+      this.graph.center(true,true);
       this.parent = this.graph.getDefaultParent();
     },
 
@@ -171,11 +171,11 @@ export default {
 </script>
 
 <style scoped>
-.dependency-graph {
+.structure-graph {
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* 新增 */
+  overflow: hidden;
 }
 
 .header {
@@ -198,7 +198,7 @@ export default {
 
 .chart-container {
   flex: 1;
-  min-height: 0; /* 重要：允许缩小 */
+  min-height: 0;
   overflow: auto;
 }
 </style>

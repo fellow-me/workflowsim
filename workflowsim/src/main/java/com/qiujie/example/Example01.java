@@ -35,8 +35,8 @@ public class Example01 {
 //            String daxPath = "data/dax/Inspiral_1000.xml";
 //            String daxPath = "data/dax/Inspiral_100.xml";
 //            String daxPath = "data/dax/Epigenomics_997.xml";
-//        String daxPath = "data/dax/Montage_25.xml";
-            String daxPath = "data/dax/CyberShake_100.xml";
+        String daxPath = "data/dax/Montage_25.xml";
+//            String daxPath = "data/dax/CyberShake_25.xml";
 //            String daxPath = "data/dax/Epigenomics_46.xml";
 //            String daxPath = "data/dax/Montage_50.xml";
 //        String daxPath = "data/dax/Montage_1000.xml";

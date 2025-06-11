@@ -2,8 +2,8 @@
   <div id="app">
     <header>
       <nav>
-        <router-link to="/task-dependency-graph">任务依赖图</router-link>
-        <router-link to="/gantt-chart">甘特图</router-link>
+        <router-link to="/structure-graph">Workflow Structure Graph</router-link>
+        <router-link to="/gantt-chart">Gantt Chart</router-link>
       </nav>
     </header>
     <main>
@@ -39,8 +39,8 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  height: 100vh; /* 新增 */
-  overflow: hidden; /* 新增 */
+  height: 100vh;
+  overflow: hidden;
 }
 
 header {
@@ -84,14 +84,14 @@ nav a.router-link-exact-active {
 
 main {
   flex: 1;
-  padding: 1rem; /* 减少内边距 */
+  padding: 1rem;
   width: 100%;
-  max-width: none; /* 移除最大宽度限制 */
+  max-width: none;
   margin: 0;
-  overflow: hidden; /* 新增 */
+  overflow: hidden;
 }
 
-/* 统一按钮样式 */
+
 button {
   padding: 0.5rem 1rem;
   background-color: var(--primary-color);
@@ -121,7 +121,7 @@ button.danger:hover {
   background-color: var(--danger-hover);
 }
 
-/* 统一文件上传样式 */
+
 .file-input {
   display: flex;
   align-items: center;
@@ -157,7 +157,6 @@ button.danger:hover {
   gap: 0.5rem;
 }
 
-/* 统一图表容器样式 */
 .chart-container {
   background-color: white;
   border-radius: var(--border-radius);

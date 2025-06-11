@@ -61,20 +61,20 @@ public class ExperimentUtil {
                 .addColumn("Vm_Id", list.stream().map(Cloudlet::getGuestId).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 10, Precision.ZERO))
                 .addColumn("Vm_MIPS", list.stream().map(job -> job.getFv() != null ? String.format("%.2f (L%d)", job.getFv().getMips(), job.getFv().getLevel()) : job.getVm().getMips() + "").toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 15))
                 .addColumn("Cloudlet_Length", list.stream().map(Cloudlet::getCloudletLength).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 20, Precision.ZERO))
-                .addColumn("Length", list.stream().map(Job::getLength).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 20, Precision.ZERO))
-//                .addColumn("Length_Check", list.stream().map(job -> job.getCloudletLength() - job.getLength() - job.getFv().getMips() * job.getFileTransferTime()).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 20, Precision.ZERO))
+                .addColumn("Length", list.stream().map(Job::getLength).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.ZERO))
+                .addColumn("Length_Check", list.stream().map(job -> job.getCloudletLength() - job.getLength() - job.getFv().getMips() * job.getFileTransferTime()).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.ZERO))
                 .addColumn("Transfer_Time", list.stream().map(Job::getFileTransferTime).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.TWO))
                 .addColumn("Start_Time", list.stream().map(Cloudlet::getExecStartTime).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.TWO))
                 .addColumn("Finish_Time", list.stream().map(Cloudlet::getExecFinishTime).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.TWO))
                 .addColumn("Process_Time", list.stream().map(Cloudlet::getActualCPUTime).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.TWO))
-//                .addColumn("Process_Time_Check", list.stream().map(job -> job.getActualCPUTime() - job.getCloudletLength() / job.getFv().getMips()).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 20, Precision.TWO))
+                .addColumn("Process_Time_Check", list.stream().map(job -> job.getActualCPUTime() - job.getCloudletLength() / job.getFv().getMips()).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 20, Precision.TWO))
                 .addColumn("Elec_Cost", list.stream().map(Job::getElecCost).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.TWO))
-//                .addColumn("Elec_Cost_Check", list.stream().map(job -> {
-//                    WorkflowDatacenter dc = (WorkflowDatacenter) job.getFv().getVm().getDatacenter();
-//                    return ExperimentUtil.calculateElecCost(dc.getElecPrice(), job.getExecStartTime(), job.getExecFinishTime(), job.getFv().getPower()) - job.getElecCost();
-//                }).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 20, Precision.TWO))
+                .addColumn("Elec_Cost_Check", list.stream().map(job -> {
+                    WorkflowDatacenter dc = (WorkflowDatacenter) job.getFv().getVm().getDatacenter();
+                    return ExperimentUtil.calculateElecCost(dc.getElecPrice(), job.getExecStartTime(), job.getExecFinishTime(), job.getFv().getPower()) - job.getElecCost();
+                }).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 20, Precision.TWO))
                 .addColumn("Retry_Count", list.stream().map(Job::getRetryCount).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.ZERO))
-//                .addColumn("Count", list.stream().map(Job::getCount).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 15, Precision.ZERO))
+                .addColumn("Count", list.stream().map(Job::getCount).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 10, Precision.ZERO))
                 .addColumn("Depth", list.stream().map(Job::getDepth).toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 5, Precision.ZERO));
         Table table = builder.build();
         System.out.println(table);

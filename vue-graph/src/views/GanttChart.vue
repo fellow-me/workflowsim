@@ -4,7 +4,7 @@
       <div class="file-input">
         <label for="jsonFile">
           <span class="icon">📁</span>
-          <span>选择JSON文件</span>
+          <span>select gantt file</span>
         </label>
         <input
             type="file"
@@ -164,7 +164,7 @@ export default {
             state: this.state,
           });
         } catch (error) {
-          console.error('读取数据失败:', error);
+          console.error('data read error:', error);
         }
       };
       reader.readAsText(file);
