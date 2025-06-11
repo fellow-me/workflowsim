@@ -1,7 +1,10 @@
 
-package com.qiujie.entity;
+package com.qiujie.core;
 
 import cn.hutool.log.StaticLog;
+import com.qiujie.entity.File;
+import com.qiujie.entity.Job;
+import com.qiujie.entity.Workflow;
 import com.qiujie.planner.WorkflowPlannerAbstract;
 import com.qiujie.util.ExperimentUtil;
 import lombok.Getter;

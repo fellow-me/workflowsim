@@ -1,8 +1,9 @@
-package com.qiujie.entity;
+package com.qiujie.core;
 
 import static com.qiujie.Constants.*;
 
 import cn.hutool.log.StaticLog;
+import com.qiujie.entity.Job;
 import com.qiujie.util.ExperimentUtil;
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.CloudletSchedulerSpaceShared;

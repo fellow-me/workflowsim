@@ -5,7 +5,7 @@ import ch.qos.logback.classic.Level;
 import com.qiujie.comparator.DepthComparator;
 import com.qiujie.comparator.JobNumComparator;
 import com.qiujie.comparator.LengthComparator;
-import com.qiujie.entity.ClockModifier;
+import com.qiujie.aop.ClockModifier;
 import com.qiujie.starter.SimStarter;
 import com.qiujie.planner.HEFTPlanner;
 import com.qiujie.util.ExperimentUtil;

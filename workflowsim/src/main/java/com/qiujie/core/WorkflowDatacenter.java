@@ -1,8 +1,10 @@
 
-package com.qiujie.entity;
+package com.qiujie.core;
 
 import cn.hutool.log.StaticLog;
 import com.qiujie.Constants;
+import com.qiujie.entity.File;
+import com.qiujie.entity.Job;
 import com.qiujie.util.ExperimentUtil;
 import lombok.Getter;
 import org.cloudbus.cloudsim.*;
@@ -125,7 +127,7 @@ public class WorkflowDatacenter extends Datacenter {
             Host parentHost = (Host) getVmAllocationPolicy().getHost(parentJob.getGuestId(), parentJob.getUserId());
             // if parentHost == null, indicate parent job is not in this datacenter
             if (parentHost == null) {
-                List<String> parentOutputFiles = parentJob.getOutputFileList().stream().map(File::getName).toList();
+                List<String> parentOutputFiles = parentJob.getOutputFileList().stream().map(com.qiujie.entity.File::getName).toList();
                 double dataSize = job.getPredInputFileList().stream().filter(file -> parentOutputFiles.contains(file.getName())).mapToDouble(File::getSize).sum();
                 temp = dataSize / Constants.INTER_BANDWIDTH;
             } else {

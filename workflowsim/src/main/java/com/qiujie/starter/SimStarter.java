@@ -3,7 +3,7 @@ package com.qiujie.starter;
 import com.qiujie.comparator.DefaultComparator;
 import com.qiujie.entity.Job;
 import com.qiujie.entity.Workflow;
-import com.qiujie.entity.WorkflowBroker;
+import com.qiujie.core.WorkflowBroker;
 import com.qiujie.planner.WorkflowPlannerAbstract;
 import com.qiujie.comparator.WorkflowComparatorInterface;
 import com.qiujie.util.ExperimentUtil;

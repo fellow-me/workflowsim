@@ -1,6 +1,6 @@
 package com.qiujie.starter;
 
-import com.qiujie.entity.ClockModifier;
+import com.qiujie.aop.ClockModifier;
 
 public abstract class ExperimentStarter {
 
