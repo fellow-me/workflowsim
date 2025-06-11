@@ -2,8 +2,8 @@
 package com.qiujie.example;
 
 import ch.qos.logback.classic.Level;
-import com.qiujie.entity.ExperimentStarter;
-import com.qiujie.entity.SimStarter;
+import com.qiujie.starter.ExperimentStarter;
+import com.qiujie.starter.SimStarter;
 import com.qiujie.planner.*;
 import com.qiujie.util.ExperimentUtil;
 import com.qiujie.util.Log;
