@@ -25,7 +25,7 @@ import static com.qiujie.Constants.*;
  * <p>
  * schedule a workflow to mutil datacenters
  */
-public class Demo01 {
+public class Example01 {
     public static void main(String[] args) throws Exception {
         long send = System.currentTimeMillis();
         ClockModifier.modifyClockMethod();

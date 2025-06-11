@@ -24,7 +24,7 @@ import static com.qiujie.Constants.*;
 /**
  * multiple brokers, each broker schedule multiple workflows
  */
-public class Demo03 {
+public class Example03 {
     public static void main(String[] args) throws Exception {
         long send = System.currentTimeMillis();
         RANDOM = new UniformDistr(0, 1, send);

@@ -19,7 +19,7 @@ import static com.qiujie.Constants.MAX_RETRY_COUNT;
  * @author qiujie
  *
  */
-public class Demo05 extends ExperimentStarter {
+public class Example05 extends ExperimentStarter {
 
 
     public static void main(String[] args) {

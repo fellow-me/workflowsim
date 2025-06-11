@@ -23,7 +23,7 @@ import static com.qiujie.Constants.*;
 /**
  * schedule multiple workflows
  */
-public class Demo02 {
+public class Example02 {
     public static void main(String[] args) throws Exception {
         long send = System.currentTimeMillis();
         RANDOM = new UniformDistr(0, 1, send);

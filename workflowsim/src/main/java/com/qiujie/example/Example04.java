@@ -22,7 +22,7 @@ import static com.qiujie.Constants.*;
  * <p>
  * different workflow sort strategy
  */
-public class Demo04 {
+public class Example04 {
     public static void main(String[] args) throws Exception {
         long seed = System.currentTimeMillis();
         ClockModifier.modifyClockMethod();
