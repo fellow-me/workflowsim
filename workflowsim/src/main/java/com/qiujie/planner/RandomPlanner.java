@@ -10,6 +10,8 @@ import org.cloudbus.cloudsim.core.CloudSim;
 
 import java.util.*;
 
+import static com.qiujie.Constants.SLACK_TIME_FACTOR;
+
 /**
  * The Random planning algorithm
  */
@@ -62,9 +64,10 @@ public class RandomPlanner extends WorkflowPlannerAbstract {
      * @param avgMips
      * @param workflow
      */
-    private void calculateUpwardRank(Map<Job, Double> avgLocalDataTransferTimeMap, Map<Job, Map<Job, Double>> avgPredecessorDataTransferTimeMap, double avgMips, Workflow workflow) {
+    private double calculateUpwardRank(Map<Job, Double> avgLocalDataTransferTimeMap, Map<Job, Map<Job, Double>> avgPredecessorDataTransferTimeMap, double avgMips, Workflow workflow) {
         upwardRankMap = new HashMap<>();
         List<Job> list = workflow.getJobList().stream().sorted(Comparator.comparingDouble(Job::getDepth).reversed()).toList();
+        double maxUpwardRank = 0;
         for (Job job : list) {
             double max = 0.0;
             for (Job child : job.getChildList()) {
@@ -76,8 +79,10 @@ public class RandomPlanner extends WorkflowPlannerAbstract {
                 max = Math.max(max, temp);
             }
             double upwardRank = max + avgLocalDataTransferTimeMap.get(job) + job.getLength() / avgMips;
+            maxUpwardRank = Math.max(maxUpwardRank, upwardRank);
             upwardRankMap.put(job, upwardRank);
         }
+        return maxUpwardRank;
     }
 
 
@@ -85,7 +90,10 @@ public class RandomPlanner extends WorkflowPlannerAbstract {
         Map<Job, Double> avgLocalDataTransferTimeMap = calculateAvgLocalDataTransferTime(workflow);
         Map<Job, Map<Job, Double>> avgPredecessorDataTransferTimeMap = calculateAvgPredecessorDataTransferTime(workflow);
         double avgMips = getVmList().stream().mapToDouble(Vm::getMips).average().getAsDouble();
-        calculateUpwardRank(avgLocalDataTransferTimeMap, avgPredecessorDataTransferTimeMap, avgMips, workflow);
+        double upwardRank = calculateUpwardRank(avgLocalDataTransferTimeMap, avgPredecessorDataTransferTimeMap, avgMips, workflow);
+        double slackTime = upwardRank * SLACK_TIME_FACTOR;
+        workflow.setDeadline(getFinishTime() + upwardRank + slackTime);
+
     }
 
 

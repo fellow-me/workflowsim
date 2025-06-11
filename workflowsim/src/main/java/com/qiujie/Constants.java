@@ -52,7 +52,7 @@ public class Constants {
     public static final double INTER_BANDWIDTH = 1e6;
     public static final double INTRA_BANDWIDTH = 2 * INTER_BANDWIDTH;
 
-    public static double LENGTH_FACTOR = 5e3;
+    public static double LENGTH_FACTOR = 4e3;
 
     public static ContinuousDistribution RANDOM;
 
@@ -75,6 +75,6 @@ public class Constants {
     public static final double β = 0.9;
     public static final double γ = 1.2;
 
-    public static int MAX_NO_IMPROVEMENT_STREAK = 50;
+    public static int MAX_NO_IMPROVEMENT_TIMES = 50;
 
 }

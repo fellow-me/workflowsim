@@ -15,10 +15,7 @@ import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.distributions.ContinuousDistribution;
 
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.qiujie.Constants.*;
@@ -56,6 +53,14 @@ public class SimStarter {
 
     public SimStarter(ContinuousDistribution random, List<String> daxPathList, Class<? extends WorkflowPlannerAbstract> plannerClass) throws Exception {
         this(random, daxPathList, plannerClass, DefaultComparator.class, true);
+    }
+
+
+    /**
+     * single workflow
+     */
+    public SimStarter(ContinuousDistribution random, String daxPath, Class<? extends WorkflowPlannerAbstract> plannerClass) throws Exception {
+        this(random, List.of(daxPath), plannerClass);
     }
 
 
@@ -133,6 +138,10 @@ public class SimStarter {
 
     public double getPlnFinishTime() {
         return broker.getPlnFinishTime();
+    }
+
+    public double getPlnRuntime() {
+        return broker.getPlnRuntime();
     }
 
     public int getDcCount() {

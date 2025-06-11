@@ -40,6 +40,10 @@ public class WorkflowBroker extends DatacenterBroker {
         return planner.getFinishTime();
     }
 
+    public double getPlnRuntime() {
+        return planner.getRuntime();
+    }
+
     public void submitWorkflowList(List<Workflow> workflowList) {
         this.workflowList.addAll(workflowList);
     }

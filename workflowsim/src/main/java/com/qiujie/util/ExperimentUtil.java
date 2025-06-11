@@ -95,7 +95,7 @@ public class ExperimentUtil {
         List<SimStarter> sortByDcCount = list.stream().sorted(Comparator.comparingInt(SimStarter::getDcCount)).toList();
         List<SimStarter> sortByVmCount = list.stream().sorted(Comparator.comparingInt(SimStarter::getVmCount)).toList();
         List<SimStarter> sortByOverdueCount = list.stream().sorted(Comparator.comparingInt(SimStarter::getOverdueCount)).toList();
-        List<SimStarter> sortByRuntime = list.stream().sorted(Comparator.comparingDouble(SimStarter::getRuntime)).toList();
+        List<SimStarter> sortByPlnRuntime = list.stream().sorted(Comparator.comparingDouble(SimStarter::getPlnRuntime)).toList();
         System.out.println();
         System.out.println("                                                  " + str + " Experiment Result");
         Table.Builder builder = new Table.Builder("idx", IntStream.rangeClosed(0, list.size() - 1).boxed().toArray(Number[]::new), ColumnFormatter.number(Alignment.CENTER, 6, Precision.ZERO))
@@ -108,7 +108,7 @@ public class ExperimentUtil {
                 .addColumn("Dc_Count", list.stream().map(starter -> String.format("%d (%d)", starter.getDcCount(), sortByDcCount.indexOf(starter))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 20))
                 .addColumn("Vm_Count", list.stream().map(starter -> String.format("%d (%d)", starter.getVmCount(), sortByVmCount.indexOf(starter))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 20))
                 .addColumn("Overdue_Count",  list.stream().map(starter -> String.format("%d (%d)", starter.getOverdueCount(), sortByOverdueCount.indexOf(starter))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 20))
-                .addColumn("Runtime", list.stream().map(starter -> String.format("%.2f (%d)", starter.getRuntime(), sortByRuntime.indexOf(starter))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 20));
+                .addColumn("Pln_Runtime", list.stream().map(starter -> String.format("%.2f (%d)", starter.getPlnRuntime(), sortByPlnRuntime.indexOf(starter))).toArray(String[]::new), ColumnFormatter.text(Alignment.CENTER, 20));
         Table table = builder.build();
         System.out.println(table);
         System.out.println();

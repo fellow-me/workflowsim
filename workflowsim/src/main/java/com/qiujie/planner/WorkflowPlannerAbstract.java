@@ -49,6 +49,9 @@ public abstract class WorkflowPlannerAbstract {
     @Getter
     private double finishTime;
 
+    @Getter
+    private double runtime;
+
 
     WorkflowPlannerAbstract() {
         sequence = new ArrayList<>();
@@ -62,7 +65,9 @@ public abstract class WorkflowPlannerAbstract {
         StaticLog.info("{}: {} start planning {} Workflows, a total of {} Jobs...", CloudSim.clock(), getClass().getSimpleName(), getWorkflowList().size(), getWorkflowList().stream().mapToInt(Workflow::getJobNum).sum());
         long start = System.currentTimeMillis();
         run();
-        StaticLog.info("{}: {} run {}s", CloudSim.clock(), getClass().getSimpleName(), (System.currentTimeMillis() - start) / 1000.0);
+        long end = System.currentTimeMillis();
+        this.runtime = (end - start) / 1000.0;
+        StaticLog.info("{}: {} run {}s", CloudSim.clock(), getClass().getSimpleName(), this.runtime);
     }
 
     protected abstract void run();
