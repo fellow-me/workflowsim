@@ -54,6 +54,10 @@ public class SimStarter {
         start();
     }
 
+    public SimStarter(ContinuousDistribution random, List<String> daxPathList, Class<? extends WorkflowPlannerAbstract> plannerClass,  Class<? extends WorkflowComparatorInterface> comparatorClass, boolean ascending) throws Exception {
+        this(random, daxPathList, plannerClass, comparatorClass, ascending, JobSequenceStrategyEnum.DEFAULT);
+    }
+
     public SimStarter(ContinuousDistribution random, List<String> daxPathList, Class<? extends WorkflowPlannerAbstract> plannerClass) throws Exception {
         this(random, daxPathList, plannerClass, DefaultComparator.class, true, JobSequenceStrategyEnum.DEFAULT);
     }
