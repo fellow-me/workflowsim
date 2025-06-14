@@ -10,6 +10,7 @@ import com.qiujie.util.ExperimentUtil;
 import com.qiujie.util.WorkflowParser;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.core.CloudSim;
@@ -35,24 +36,30 @@ public class SimStarter {
     private final Class<? extends WorkflowPlannerAbstract> plannerClass;
     private final Class<? extends WorkflowComparatorInterface> comparatorClass;
     private final boolean ascending;
+    private final JobSequenceStrategyEnum jobSequenceStrategy;
     private double runtime;
-    @Getter(AccessLevel.NONE)
+    //    @Getter(AccessLevel.NONE)
     private WorkflowBroker broker;
 
 
-    public SimStarter(ContinuousDistribution random, List<String> daxPathList, Class<? extends WorkflowPlannerAbstract> plannerClass, Class<? extends WorkflowComparatorInterface> comparatorClass, boolean ascending) throws Exception {
+    public SimStarter(ContinuousDistribution random, List<String> daxPathList, Class<? extends WorkflowPlannerAbstract> plannerClass, Class<? extends WorkflowComparatorInterface> comparatorClass, boolean ascending, JobSequenceStrategyEnum jobSequenceStrategy) throws Exception {
         this.id = nextId.getAndIncrement();
-        setName(plannerClass.getSimpleName(), comparatorClass.getSimpleName(), ascending ? "asc" : "desc");
+        setName(plannerClass.getSimpleName(), comparatorClass.getSimpleName(), ascending ? "asc" : "desc", jobSequenceStrategy.name());
         this.random = random;
         this.daxPathList = daxPathList;
         this.plannerClass = plannerClass;
         this.comparatorClass = comparatorClass;
         this.ascending = ascending;
+        this.jobSequenceStrategy = jobSequenceStrategy;
         start();
     }
 
     public SimStarter(ContinuousDistribution random, List<String> daxPathList, Class<? extends WorkflowPlannerAbstract> plannerClass) throws Exception {
-        this(random, daxPathList, plannerClass, DefaultComparator.class, true);
+        this(random, daxPathList, plannerClass, DefaultComparator.class, true, JobSequenceStrategyEnum.DEFAULT);
+    }
+
+    public SimStarter(ContinuousDistribution random, String daxPath, Class<? extends WorkflowPlannerAbstract> plannerClass, JobSequenceStrategyEnum jobSequenceStrategy) throws Exception {
+        this(random, List.of(daxPath), plannerClass, DefaultComparator.class, true, jobSequenceStrategy);
     }
 
 
@@ -76,6 +83,7 @@ public class SimStarter {
 
     private void run() throws Exception {
         RANDOM = random;
+        JOB_SEQUENCE_STRATEGY = jobSequenceStrategy;
         // init cloudsim
         CloudSim.init(USERS, Calendar.getInstance(), TRACE_FLAG);
         // create datacenters

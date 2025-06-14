@@ -23,7 +23,17 @@ public class Constants {
      * - Inner List contains 12-hour electricity prices for each data center
      * Example: ELEC_PRICES.get(0).get(0) represents the electricity price of the 1st hour in the 1st data center
      */
-    public static final List<List<Double>> ELEC_PRICES = List.of(List.of(0.10, 0.09, 0.11, 0.11, 0.09, 0.09, 0.10, 0.10, 0.15, 0.15, 0.15, 0.13), List.of(0.11, 0.12, 0.12, 0.12, 0.12, 0.22, 0.22, 0.22, 0.22, 0.22, 0.19, 0.18), List.of(0.15, 0.10, 0.11, 0.11, 0.19, 0.22, 0.19, 0.11, 0.12, 0.07, 0.08, 0.10), List.of(0.07, 0.08, 0.09, 0.07, 0.13, 0.14, 0.13, 0.13, 0.12, 0.12, 0.09, 0.09), List.of(0.13, 0.13, 0.15, 0.15, 0.17, 0.19, 0.21, 0.21, 0.21, 0.18, 0.18, 0.17), List.of(0.18, 0.19, 0.18, 0.18, 0.18, 0.21, 0.22, 0.25, 0.25, 0.16, 0.16, 0.17), List.of(0.24, 0.24, 0.19, 0.15, 0.15, 0.16, 0.16, 0.08, 0.08, 0.08, 0.08, 0.16), List.of(0.21, 0.21, 0.21, 0.21, 0.16, 0.16, 0.21, 0.21, 0.21, 0.21, 0.21, 0.19), List.of(0.19, 0.18, 0.18, 0.18, 0.19, 0.19, 0.18, 0.18, 0.18, 0.18, 0.19, 0.19), List.of(0.08, 0.08, 0.09, 0.09, 0.13, 0.13, 0.13, 0.13, 0.11, 0.11, 0.09, 0.09));
+    public static final List<List<Double>> ELEC_PRICES = List.of(
+            List.of(0.10, 0.09, 0.11, 0.11, 0.09, 0.09, 0.10, 0.10, 0.15, 0.15, 0.15, 0.13)
+            , List.of(0.11, 0.12, 0.12, 0.12, 0.12, 0.22, 0.22, 0.22, 0.22, 0.22, 0.19, 0.18)
+            , List.of(0.15, 0.10, 0.11, 0.11, 0.19, 0.22, 0.19, 0.11, 0.12, 0.07, 0.08, 0.10)
+            , List.of(0.07, 0.08, 0.09, 0.07, 0.13, 0.14, 0.13, 0.13, 0.12, 0.12, 0.09, 0.09)
+            , List.of(0.13, 0.13, 0.15, 0.15, 0.17, 0.19, 0.21, 0.21, 0.21, 0.18, 0.18, 0.17)
+            , List.of(0.18, 0.19, 0.18, 0.18, 0.18, 0.21, 0.22, 0.25, 0.25, 0.16, 0.16, 0.17)
+            , List.of(0.24, 0.24, 0.19, 0.15, 0.15, 0.16, 0.16, 0.08, 0.08, 0.08, 0.08, 0.16)
+            , List.of(0.21, 0.21, 0.21, 0.21, 0.16, 0.16, 0.21, 0.21, 0.21, 0.21, 0.21, 0.19)
+            , List.of(0.19, 0.18, 0.18, 0.18, 0.19, 0.19, 0.18, 0.18, 0.18, 0.18, 0.19, 0.19)
+            , List.of(0.08, 0.08, 0.09, 0.09, 0.13, 0.13, 0.13, 0.13, 0.11, 0.11, 0.09, 0.09));
 
     public static final String ARCH = "x86";
     public static final String OS = "Linux";
@@ -50,16 +60,16 @@ public class Constants {
     public static final int SR = 2;
 
     public static final double INTER_BANDWIDTH = 1e6;
-    public static final double INTRA_BANDWIDTH = 2 * INTER_BANDWIDTH;
+    public static final double INTRA_BANDWIDTH = 20 * INTER_BANDWIDTH;
 
-    public static double LENGTH_FACTOR = 4e3;
+    public static double LENGTH_FACTOR = 1e3;
 
     public static ContinuousDistribution RANDOM;
 
-    public static final List<Double> RELIABILITY_FACTOR_LIST = List.of(0.2, 0.4, 0.6, 0.8);
+    public static final List<Double> RELIABILITY_FACTOR_LIST = List.of(0.992, 0.994, 0.996, 0.998);
     public static final List<Double> SLACK_TIME_FACTOR_LIST = List.of(0.2, 0.4, 0.6, 0.8);
 
-    public static double RELIABILITY_FACTOR = 0.8;
+    public static double RELIABILITY_FACTOR = 0.998;
     public static double SLACK_TIME_FACTOR = 0.2;
 
     public static List<Class<? extends Application>> APP_LIST = List.of(Montage.class, CyberShake.class);
@@ -70,11 +80,11 @@ public class Constants {
 
     public static int MAX_RETRY_COUNT = 10;
 
-    // IPW
-    public static final double α = 110.0;
-    public static final double β = 0.9;
-    public static final double γ = 1.2;
 
-    public static int MAX_NO_IMPROVEMENT_TIMES = 50;
+    public static JobSequenceStrategyEnum JOB_SEQUENCE_STRATEGY;
+
+    public enum JobSequenceStrategyEnum {
+        UPWARD_RANK, DOWNWARD_RANK, DEADLINE, DEPTH, DEFAULT
+    }
 
 }
