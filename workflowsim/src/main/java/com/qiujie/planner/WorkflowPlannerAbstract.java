@@ -189,6 +189,11 @@ public abstract class WorkflowPlannerAbstract {
                                   double maxLoad,
                                   double performance,
                                   double power) {
+
+        final double α = 110.0;
+        final double β = 0.9;
+        final double γ = 1.2;
+
         // 1. Calculate Performance per Watt (PpW)
         double ppw = performance / power;
         // 2. Compute the exponent for sigmoid
@@ -242,7 +247,7 @@ public abstract class WorkflowPlannerAbstract {
             }
             maxReliability *= maxSubReliability; // To maximize reliability, you need to select the Fv with the smallest value of lambda/mips.
         }
-        workflow.setReliGoal(RELIABILITY_FACTOR * maxReliability);
+        workflow.setReliGoal(Math.pow(RELIABILITY_FACTOR, workflow.getJobNum()) * maxReliability);
     }
 
 }

@@ -91,8 +91,8 @@ public class HEFTPlanner extends WorkflowPlannerAbstract {
     private void calculateUpwardRank(Workflow workflow) {
         Map<Job, Double> avgLocalDataTransferTimeMap = calculateAvgLocalDataTransferTime(workflow);
         Map<Job, Map<Job, Double>> avgPredecessorDataTransferTimeMap = calculateAvgPredecessorDataTransferTime(workflow);
-        double avgMips = getVmList().stream().mapToDouble(Vm::getMips).average().getAsDouble();
-        double upwardRank = calculateUpwardRank(avgLocalDataTransferTimeMap, avgPredecessorDataTransferTimeMap, avgMips, workflow);
+        double mips = getVmList().stream().mapToDouble(Vm::getMips).average().getAsDouble();
+        double upwardRank = calculateUpwardRank(avgLocalDataTransferTimeMap, avgPredecessorDataTransferTimeMap, mips, workflow);
         double slackTime = upwardRank * SLACK_TIME_FACTOR;
         workflow.setDeadline(getFinishTime() + upwardRank + slackTime);
     }
