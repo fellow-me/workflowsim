@@ -18,6 +18,7 @@ public abstract class ExperimentStarter {
     public ExperimentStarter() {
         this.name = getClass().getSimpleName();
         STARTUP = MarkerFactory.getMarker("STARTUP");
+        System.setProperty("startup.class", name);
         start();
     }
 

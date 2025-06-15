@@ -11,13 +11,13 @@
     <!-- Log file output directory -->
     <property name="LOG_PATH" value="log"/>
 
+    <property name="STARTUP_CLASS" value="${startup.class:-default}"/>
+
     <!-- Rolling file appender configuration -->
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH}/experiment.log</file>
+        <file>${LOG_PATH}/${STARTUP_CLASS}.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- Generate a new file every day -->
-            <fileNamePattern>${LOG_PATH}/experiment.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!-- Retain logs for 30 days -->
+            <fileNamePattern>${LOG_PATH}/${STARTUP_CLASS}.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
