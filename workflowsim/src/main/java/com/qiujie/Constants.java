@@ -9,6 +9,8 @@ import java.util.List;
 
 public class Constants {
 
+    public static String SIM_NAME;
+
     public static final int USERS = 1;
     public static final boolean TRACE_FLAG = false;
 
@@ -60,7 +62,7 @@ public class Constants {
     public static final int SR = 2;
 
     public static final double INTER_BANDWIDTH = 1e6;
-    public static final double INTRA_BANDWIDTH = 20 * INTER_BANDWIDTH;
+    public static final double INTRA_BANDWIDTH = 10 * INTER_BANDWIDTH;
 
     public static double LENGTH_FACTOR = 1e3;
 
@@ -80,11 +82,10 @@ public class Constants {
 
     public static int MAX_RETRY_COUNT = 10;
 
-
     public static JobSequenceStrategyEnum JOB_SEQUENCE_STRATEGY;
 
     public enum JobSequenceStrategyEnum {
-        UPWARD_RANK, DOWNWARD_RANK, DEADLINE, DEPTH, DEFAULT
+        UPWARD_RANK, DOWNWARD_RANK, DEADLINE, DEPTH,ID, DEFAULT
     }
 
 }

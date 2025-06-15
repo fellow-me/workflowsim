@@ -62,12 +62,12 @@ public abstract class WorkflowPlannerAbstract {
 
 
     public void start() {
-        StaticLog.info("{}: {} start planning {} Workflows, a total of {} Jobs...", CloudSim.clock(), getClass().getSimpleName(), getWorkflowList().size(), getWorkflowList().stream().mapToInt(Workflow::getJobNum).sum());
+        StaticLog.info("{}: {}: Starting planning {} Workflows, a total of {} Jobs...", CloudSim.clock(), SIM_NAME, getWorkflowList().size(), getWorkflowList().stream().mapToInt(Workflow::getJobNum).sum());
         long start = System.currentTimeMillis();
         run();
         long end = System.currentTimeMillis();
         this.runtime = (end - start) / 1000.0;
-        StaticLog.info("{}: {} run {}s", CloudSim.clock(), getClass().getSimpleName(), this.runtime);
+        StaticLog.info("{}: {}: Running {}s", CloudSim.clock(), SIM_NAME, this.runtime);
     }
 
     protected abstract void run();

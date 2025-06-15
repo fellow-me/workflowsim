@@ -15,17 +15,18 @@ public class WorkflowGenerator {
 
         String basePath = "data/dax";
 
-//        generateWorkflow(basePath, CyberShake.class, 25);
+        generateWorkflow(basePath, CyberShake.class, 800);
+        generateWorkflow(basePath, Montage.class, 800);
 
 //        generateWorkflows(basePath, Montage.class, Constants.JOB_NUM_LIST, Constants.INSTANCE_NUM_LIST);
 //        generateWorkflows(basePath, CyberShake.class, Constants.JOB_NUM_LIST, Constants.INSTANCE_NUM_LIST);
 
-        List<Class<? extends Application>> classList = List.of(Montage.class, CyberShake.class, Genome.class);
-        for (Class<? extends Application> clazz : classList) {
-            for (Integer jobNum : Constants.JOB_NUM_LIST) {
-                generateWorkflow(basePath, clazz, jobNum);
-            }
-        }
+//        List<Class<? extends Application>> classList = List.of(Montage.class, CyberShake.class, Genome.class);
+//        for (Class<? extends Application> clazz : classList) {
+//            for (Integer jobNum : Constants.JOB_NUM_LIST) {
+//                generateWorkflow(basePath, clazz, jobNum);
+//            }
+//        }
     }
 
 

@@ -10,6 +10,7 @@ import org.cloudbus.cloudsim.core.CloudSim;
 
 import java.util.*;
 
+import static com.qiujie.Constants.SIM_NAME;
 import static com.qiujie.Constants.SLACK_TIME_FACTOR;
 
 /**
@@ -102,7 +103,7 @@ public class HEFTPlanner extends WorkflowPlannerAbstract {
      * allocate jobs
      */
     private void allocateJobs(Workflow workflow) {
-        StaticLog.info("{}: Starting planning workflow #{} {}, a total of {} Jobs...", CloudSim.clock(), workflow.getId(), workflow.getName(), workflow.getJobNum());
+        StaticLog.info("{}: {}: Starting planning workflow #{} {}, a total of {} Jobs...", CloudSim.clock(),SIM_NAME, workflow.getId(), workflow.getName(), workflow.getJobNum());
         List<Job> sequence = workflow.getJobList().stream().sorted(Comparator.comparingDouble(upwardRankMap::get).reversed()).toList();
         eftMap = new HashMap<>();
         Solution solution = new Solution();
@@ -137,7 +138,7 @@ public class HEFTPlanner extends WorkflowPlannerAbstract {
         getSequence().addAll(solution.getSequence());
         setElecCost(getElecCost() + solution.getElecCost());
         setFinishTime(Math.max(getFinishTime(), solution.getFinishTime()));
-        StaticLog.debug(String.format("%.2f: %s: Best %s", CloudSim.clock(), workflow.getName(), solution));
+        StaticLog.debug(String.format("%.2f: %s: %s: Best %s", CloudSim.clock(),SIM_NAME, workflow.getName(), solution));
 
     }
 

@@ -42,7 +42,7 @@ public class SimStarter {
     private WorkflowBroker broker;
 
 
-    public SimStarter(ContinuousDistribution random, List<String> daxPathList, Class<? extends WorkflowPlannerAbstract> plannerClass, Class<? extends WorkflowComparatorInterface> comparatorClass, boolean ascending, JobSequenceStrategyEnum jobSequenceStrategy) throws Exception {
+    public SimStarter(ContinuousDistribution random, List<String> daxPathList, Class<? extends WorkflowPlannerAbstract> plannerClass, Class<? extends WorkflowComparatorInterface> comparatorClass, boolean ascending, JobSequenceStrategyEnum jobSequenceStrategy) {
         this.id = nextId.getAndIncrement();
         setName(plannerClass.getSimpleName(), comparatorClass.getSimpleName(), ascending ? "asc" : "desc", jobSequenceStrategy.name());
         this.random = random;
@@ -54,7 +54,7 @@ public class SimStarter {
         start();
     }
 
-    public SimStarter(ContinuousDistribution random, List<String> daxPathList, Class<? extends WorkflowPlannerAbstract> plannerClass,  Class<? extends WorkflowComparatorInterface> comparatorClass, boolean ascending) throws Exception {
+    public SimStarter(ContinuousDistribution random, List<String> daxPathList, Class<? extends WorkflowPlannerAbstract> plannerClass, Class<? extends WorkflowComparatorInterface> comparatorClass, boolean ascending) throws Exception {
         this(random, daxPathList, plannerClass, comparatorClass, ascending, JobSequenceStrategyEnum.DEFAULT);
     }
 
@@ -66,7 +66,6 @@ public class SimStarter {
         this(random, List.of(daxPath), plannerClass, DefaultComparator.class, true, jobSequenceStrategy);
     }
 
-
     /**
      * single workflow
      */
@@ -75,17 +74,22 @@ public class SimStarter {
     }
 
 
-    private void start() throws Exception {
+    private void start() {
         System.out.printf("Simulation %s starting...\n", name);
         long start = System.currentTimeMillis();
-        run();
-        long end = System.currentTimeMillis();
-        this.runtime = (end - start) / 1000.0;
-        System.out.printf("Simulation %s run %.2fs\n", name, runtime);
+        try {
+            run();
+            long end = System.currentTimeMillis();
+            this.runtime = (end - start) / 1000.0;
+            System.out.printf("Simulation %s run %.2fs\n", name, runtime);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
     private void run() throws Exception {
+        SIM_NAME = name;
         RANDOM = random;
         JOB_SEQUENCE_STRATEGY = jobSequenceStrategy;
         // init cloudsim
