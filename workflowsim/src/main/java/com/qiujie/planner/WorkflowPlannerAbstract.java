@@ -1,12 +1,12 @@
 package com.qiujie.planner;
 
-import cn.hutool.log.StaticLog;
 import com.qiujie.entity.*;
 import com.qiujie.util.ExperimentUtil;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.core.CloudSim;
@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static com.qiujie.Constants.*;
 
+@Slf4j
 public abstract class WorkflowPlannerAbstract {
 
     @NonNull
@@ -62,12 +63,12 @@ public abstract class WorkflowPlannerAbstract {
 
 
     public void start() {
-        StaticLog.info("{}: {}: Starting planning {} Workflows, a total of {} Jobs...", CloudSim.clock(), SIM_NAME, getWorkflowList().size(), getWorkflowList().stream().mapToInt(Workflow::getJobNum).sum());
+        log.info("{}: {}: Starting planning {} Workflows, a total of {} Jobs...", CloudSim.clock(), SIM_NAME, getWorkflowList().size(), getWorkflowList().stream().mapToInt(Workflow::getJobNum).sum());
         long start = System.currentTimeMillis();
         run();
         long end = System.currentTimeMillis();
         this.runtime = (end - start) / 1000.0;
-        StaticLog.info("{}: {}: Running {}s", CloudSim.clock(), SIM_NAME, this.runtime);
+        log.info("{}: {}: Running {}s", CloudSim.clock(), SIM_NAME, this.runtime);
     }
 
     protected abstract void run();

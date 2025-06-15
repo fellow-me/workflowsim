@@ -1,9 +1,9 @@
 package com.qiujie.planner;
 
-import cn.hutool.log.StaticLog;
 import com.qiujie.core.WorkflowDatacenter;
 import com.qiujie.entity.*;
 import com.qiujie.util.ExperimentUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.core.CloudSim;
@@ -17,6 +17,7 @@ import static com.qiujie.Constants.SLACK_TIME_FACTOR;
  * The Random planning algorithm
  */
 
+@Slf4j
 public class RandomPlanner extends WorkflowPlannerAbstract {
 
     private Map<Job, Map<Vm, Double>> localDataTransferTimeMap;
@@ -102,7 +103,7 @@ public class RandomPlanner extends WorkflowPlannerAbstract {
      * allocate jobs
      */
     private void allocateJobs(Workflow workflow) {
-        StaticLog.info("{}: {}: Starting planning workflow #{} {}, a total of {} Jobs...", CloudSim.clock(), SIM_NAME, workflow.getId(), workflow.getName(), workflow.getJobNum());
+        log.info("{}: {}: Starting planning workflow #{} {}, a total of {} Jobs...", CloudSim.clock(), SIM_NAME, workflow.getId(), workflow.getName(), workflow.getJobNum());
         List<Job> sequence = workflow.getJobList().stream().sorted(Comparator.comparingDouble(upwardRankMap::get).reversed()).toList();
         eftMap = new HashMap<>();
         Solution solution = new Solution();
@@ -137,7 +138,7 @@ public class RandomPlanner extends WorkflowPlannerAbstract {
         getSequence().addAll(solution.getSequence());
         setElecCost(getElecCost() + solution.getElecCost());
         setFinishTime(Math.max(getFinishTime(), solution.getFinishTime()));
-        StaticLog.debug(String.format("%.2f: %s: %s: Best %s", CloudSim.clock(), SIM_NAME, workflow.getName(), solution));
+        log.debug(String.format("%.2f: %s: %s: Best %s", CloudSim.clock(), SIM_NAME, workflow.getName(), solution));
 
     }
 

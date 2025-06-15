@@ -4,6 +4,7 @@ import generator.app.Application;
 import generator.app.CyberShake;
 import generator.app.Montage;
 import org.cloudbus.cloudsim.distributions.ContinuousDistribution;
+import org.slf4j.Marker;
 
 import java.util.List;
 
@@ -64,7 +65,7 @@ public class Constants {
     public static final double INTER_BANDWIDTH = 1e6;
     public static final double INTRA_BANDWIDTH = 10 * INTER_BANDWIDTH;
 
-    public static double LENGTH_FACTOR = 1e3;
+    public static double LENGTH_FACTOR = 2e3;
 
     public static ContinuousDistribution RANDOM;
 
@@ -85,7 +86,9 @@ public class Constants {
     public static JobSequenceStrategyEnum JOB_SEQUENCE_STRATEGY;
 
     public enum JobSequenceStrategyEnum {
-        UPWARD_RANK, DOWNWARD_RANK, DEADLINE, DEPTH,ID, DEFAULT
+        UPWARD_RANK, DOWNWARD_RANK, DEADLINE, DEPTH, LENGTH_ASC, LENGTH_DESC, DEFAULT
     }
+
+    public static Marker STARTUP;
 
 }

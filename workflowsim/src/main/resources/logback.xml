@@ -5,7 +5,10 @@
         </encoder>
     </appender>
 
-    <root level="debug">
+    <!-- STARTUP Level -->
+    <turboFilter class="com.qiujie.filter.StartupMarkerFilter"/>
+
+    <root level="TRACE">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

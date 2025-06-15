@@ -1,11 +1,11 @@
 
 package com.qiujie.util;
 
-import cn.hutool.log.StaticLog;
 import com.qiujie.Constants;
 import com.qiujie.entity.File;
 import com.qiujie.entity.Job;
 import com.qiujie.entity.Workflow;
+import lombok.extern.slf4j.Slf4j;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
+@Slf4j
 public class WorkflowParser {
 
 
@@ -40,7 +41,7 @@ public class WorkflowParser {
             throw new RuntimeException(e);
         }
         Element root = dom.getRootElement();
-        Map<String, Job> nodeMap = new HashMap<>();
+        Map<String, Job> nodeMap = new LinkedHashMap<>();
         for (Element node : root.getChildren()) {
             switch (node.getName().toLowerCase()) {
                 case "job":
@@ -53,7 +54,7 @@ public class WorkflowParser {
                             length = 100;
                         }
                     } else {
-                        StaticLog.error("Cannot find runtime for " + id);
+                        log.error("Cannot find runtime for " + id);
                     }
                     Job job = new Job(workflowName + "_" + id, length);
                     for (Element fileNode : node.getChildren()) {
@@ -63,7 +64,7 @@ public class WorkflowParser {
                                 fileName = fileNode.getAttributeValue("file"); // DAX version 3.0
                             }
                             if (fileName == null) {
-                                StaticLog.error("File name not found");
+                                log.error("File name not found");
                             }
                             String link = fileNode.getAttributeValue("link");
                             double size = 0.0;
@@ -74,7 +75,7 @@ public class WorkflowParser {
                                     size = 100;
                                 }
                             } else {
-                                StaticLog.warn("File size not found for " + fileName);
+                                log.warn("File size not found for " + fileName);
                             }
                             switch (link) {
                                 case "input":
@@ -84,7 +85,7 @@ public class WorkflowParser {
                                     job.getOutputFileList().add(new File(fileName, size));
                                     break;
                                 default:
-                                    StaticLog.warn("Cannot identify file type");
+                                    log.warn("Cannot identify file type");
                                     break;
                             }
                         }

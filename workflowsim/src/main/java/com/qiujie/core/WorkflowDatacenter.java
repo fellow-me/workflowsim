@@ -1,12 +1,12 @@
 
 package com.qiujie.core;
 
-import cn.hutool.log.StaticLog;
 import com.qiujie.Constants;
 import com.qiujie.entity.File;
 import com.qiujie.entity.Job;
 import com.qiujie.util.ExperimentUtil;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudbus.cloudsim.*;
 import org.cloudbus.cloudsim.core.*;
 
@@ -16,6 +16,7 @@ import java.util.Objects;
 
 
 @Getter
+@Slf4j
 public class WorkflowDatacenter extends Datacenter {
 
 
@@ -47,8 +48,8 @@ public class WorkflowDatacenter extends Datacenter {
             // checks whether this Cloudlet has finished or not
             if (cloudlet.isFinished()) {
                 String name = CloudSim.getEntityName(cloudlet.getUserId());
-                StaticLog.warn("{}: {}: Warning - {} #{} owned by {} is already completed/finished.", CloudSim.clock(), getName(), cloudlet.getClass().getSimpleName(), cloudlet.getCloudletId(), name);
-                StaticLog.info("{}: {}: Therefore, it is not being executed again", CloudSim.clock(), getName());
+                log.warn("{}: {}: Warning - {} #{} owned by {} is already completed/finished.", CloudSim.clock(), getName(), cloudlet.getClass().getSimpleName(), cloudlet.getCloudletId(), name);
+                log.info("{}: {}: Therefore, it is not being executed again", CloudSim.clock(), getName());
                 // NOTE: If a Cloudlet has finished, then it won't be processed.
                 // So, if ack is required, this method sends back a result.
                 // If ack is not required, this method don't send back a result.
@@ -91,7 +92,7 @@ public class WorkflowDatacenter extends Datacenter {
             if (estimatedProcessTime > 0.0 && !Double.isInfinite(estimatedProcessTime)) {
                 send(getId(), estimatedProcessTime, CloudActionTags.VM_DATACENTER_EVENT);
             } else {
-                StaticLog.trace("{} {}: {} #{} is paused because not enough free PEs on {} #{}", CloudSim.clock(), getName(), cloudlet.getClass().getSimpleName(), cloudlet.getCloudletId(), vm.getClassName(), vm.getId());
+                log.trace("{} {}: {} #{} is paused because not enough free PEs on {} #{}", CloudSim.clock(), getName(), cloudlet.getClass().getSimpleName(), cloudlet.getCloudletId(), vm.getClassName(), vm.getId());
             }
             if (ack) {
                 int[] data = new int[3];
@@ -102,10 +103,10 @@ public class WorkflowDatacenter extends Datacenter {
                 sendNow(cloudlet.getUserId(), CloudActionTags.CLOUDLET_SUBMIT_ACK, data);
             }
         } catch (ClassCastException c) {
-            StaticLog.error("{}: {}: processCloudletSubmit(): ClassCastException error.", CloudSim.clock(), getName());
+            log.error("{}: {}: processCloudletSubmit(): ClassCastException error.", CloudSim.clock(), getName());
             c.printStackTrace();
         } catch (Exception e) {
-            StaticLog.error("{}: {}: processCloudletSubmit(): Exception error.", CloudSim.clock(), getName());
+            log.error("{}: {}: processCloudletSubmit(): Exception error.", CloudSim.clock(), getName());
             e.printStackTrace();
         }
 

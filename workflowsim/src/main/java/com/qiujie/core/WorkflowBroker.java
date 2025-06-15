@@ -1,13 +1,13 @@
 
 package com.qiujie.core;
 
-import cn.hutool.log.StaticLog;
 import com.qiujie.entity.File;
 import com.qiujie.entity.Job;
 import com.qiujie.entity.Workflow;
 import com.qiujie.planner.WorkflowPlannerAbstract;
 import com.qiujie.util.ExperimentUtil;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudbus.cloudsim.*;
 import org.cloudbus.cloudsim.core.*;
 import org.cloudbus.cloudsim.lists.VmList;
@@ -19,6 +19,7 @@ import java.util.*;
  *
  * @author qiujie
  */
+@Slf4j
 public class WorkflowBroker extends DatacenterBroker {
 
     @Getter
@@ -69,9 +70,9 @@ public class WorkflowBroker extends DatacenterBroker {
         if (result == CloudSimTags.TRUE) {
             getVmsToDatacentersMap().put(vmId, datacenterId);
             getGuestsCreatedList().add(guest);
-            StaticLog.info("{}: {}: {} #{} has been created in Datacenter #{}, {} #{}", CloudSim.clock(), getName(), guest.getClassName(), vmId, datacenterId, guest.getHost().getClassName(), guest.getHost().getId());
+            log.info("{}: {}: {} #{} has been created in Datacenter #{}, {} #{}", CloudSim.clock(), getName(), guest.getClassName(), vmId, datacenterId, guest.getHost().getClassName(), guest.getHost().getId());
         } else {
-            StaticLog.trace("{}: {}: Creation of {} #{} failed in Datacenter #{}", CloudSim.clock(), getName(), guest.getClassName(), vmId, datacenterId);
+            log.trace("{}: {}: Creation of {} #{} failed in Datacenter #{}", CloudSim.clock(), getName(), guest.getClassName(), vmId, datacenterId);
         }
 
         incrementVmsAcks();
@@ -94,7 +95,7 @@ public class WorkflowBroker extends DatacenterBroker {
                 if (!getGuestsCreatedList().isEmpty()) { // if some vm were created
                     processPlanning();
                 } else { // no vms created. abort
-                    StaticLog.info("{}: {}: none of the required VMs could be created. Aborting", CloudSim.clock(), getName());
+                    log.info("{}: {}: none of the required VMs could be created. Aborting", CloudSim.clock(), getName());
                     finishExecution();
                 }
             }
@@ -113,10 +114,10 @@ public class WorkflowBroker extends DatacenterBroker {
         Cloudlet cloudlet = (Cloudlet) ev.getData();
         Job job = (Job) cloudlet;
         getCloudletReceivedList().add(cloudlet);
-        StaticLog.info("{}: {}: {} #{} {} return received, the number of finished Cloudlets is {}", CloudSim.clock(), getName(), cloudlet.getClass().getSimpleName(), cloudlet.getCloudletId(), job.getName(), getCloudletReceivedList().size());
+        log.info("{}: {}: {} #{} {} return received, the number of finished Cloudlets is {}", CloudSim.clock(), getName(), cloudlet.getClass().getSimpleName(), cloudlet.getCloudletId(), job.getName(), getCloudletReceivedList().size());
         cloudletsSubmitted--;
         if (getCloudletList().isEmpty() && cloudletsSubmitted == 0) { // all cloudlets executed
-            StaticLog.info("{}: {}: All Cloudlets executed. Finishing...", CloudSim.clock(), getName());
+            log.info("{}: {}: All Cloudlets executed. Finishing...", CloudSim.clock(), getName());
 //            clearDatacenters();
             finishExecution();
         } else {
@@ -150,14 +151,14 @@ public class WorkflowBroker extends DatacenterBroker {
                 if (vm == null) { // vm was not created
                     vm = VmList.getById(getGuestList(), cloudlet.getGuestId()); // check if exists in the submitted list
                     if (vm != null) {
-                        StaticLog.info("{}: {}: Postponing execution of cloudlet #{}: bount {} #{} not available", CloudSim.clock(), getName(), cloudlet.getCloudletId(), vm.getClassName(), vm.getId());
+                        log.info("{}: {}: Postponing execution of cloudlet #{}: bount {} #{} not available", CloudSim.clock(), getName(), cloudlet.getCloudletId(), vm.getClassName(), vm.getId());
                     } else {
-                        StaticLog.info("{}: {}: Postponing execution of cloudlet #{}: bount guest entity of id {} doesn't exist", CloudSim.clock(), getName(), cloudlet.getCloudletId(), cloudlet.getGuestId());
+                        log.info("{}: {}: Postponing execution of cloudlet #{}: bount guest entity of id {} doesn't exist", CloudSim.clock(), getName(), cloudlet.getCloudletId(), cloudlet.getGuestId());
                     }
                     continue;
                 }
             }
-            StaticLog.info("{}: {}: Sending {} #{} {} to {} #{}", CloudSim.clock(), getName(), cloudlet.getClass().getSimpleName(), cloudlet.getCloudletId(), ((Job) cloudlet).getName(), vm.getClassName(), vm.getId());
+            log.info("{}: {}: Sending {} #{} {} to {} #{}", CloudSim.clock(), getName(), cloudlet.getClass().getSimpleName(), cloudlet.getCloudletId(), ((Job) cloudlet).getName(), vm.getClassName(), vm.getId());
             cloudlet.setGuestId(vm.getId());
             sendNow(getVmsToDatacentersMap().get(vm.getId()), CloudActionTags.CLOUDLET_SUBMIT, cloudlet);
             cloudletsSubmitted++;
@@ -180,7 +181,7 @@ public class WorkflowBroker extends DatacenterBroker {
     protected void processResourceCharacteristicsRequest(SimEvent ev) {
         setDatacenterIdsList(CloudSim.getCloudResourceList());
         setDatacenterCharacteristicsList(new HashMap<>());
-        StaticLog.info("{}: {}: Cloud Resource List received with {} datacenter(s)", CloudSim.clock(), getName(), getDatacenterIdsList().size());
+        log.info("{}: {}: Cloud Resource List received with {} datacenter(s)", CloudSim.clock(), getName(), getDatacenterIdsList().size());
         for (Integer datacenterId : getDatacenterIdsList()) {
             sendNow(datacenterId, CloudActionTags.RESOURCE_CHARACTERISTICS, getId());
         }
@@ -194,11 +195,11 @@ public class WorkflowBroker extends DatacenterBroker {
         selectHostForLocalInputFile();
         planner.setWorkflowList(new ArrayList<>(workflowList));
         planner.setVmList(new ArrayList<>(getGuestsCreatedList()));
-        StaticLog.debug("{}: {}: Create {} Vms {}", CloudSim.clock(), getName(), getGuestsCreatedList().size(), getGuestsCreatedList().stream().map(GuestEntity::getId).sorted().toList());
-        StaticLog.info("{}: {}: Starting planning...", CloudSim.clock(), getName());
+        log.debug("{}: {}: Create {} Vms {}", CloudSim.clock(), getName(), getGuestsCreatedList().size(), getGuestsCreatedList().stream().map(GuestEntity::getId).sorted().toList());
+        log.info("{}: {}: Starting planning...", CloudSim.clock(), getName());
         planner.start();
-        StaticLog.debug("{}: {}: Job schedule sequence  {}", CloudSim.clock(), getName(), planner.getSequence().stream().map(Cloudlet::getCloudletId).toList());
-        StaticLog.info("{}: {}: Starting submitting...", CloudSim.clock(), getName());
+        log.debug("{}: {}: Job schedule sequence {}", CloudSim.clock(), getName(), planner.getSequence().stream().map(Cloudlet::getCloudletId).toList());
+        log.info("{}: {}: Starting submitting...", CloudSim.clock(), getName());
         submitCloudletList(planner.getSequence());
         submitCloudlets();
     }

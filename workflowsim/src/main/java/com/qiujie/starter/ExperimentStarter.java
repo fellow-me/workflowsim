@@ -1,7 +1,13 @@
 package com.qiujie.starter;
 
 import com.qiujie.aop.ClockModifier;
+import lombok.extern.slf4j.Slf4j;
+import org.cloudbus.cloudsim.core.CloudSim;
+import org.slf4j.MarkerFactory;
 
+import static com.qiujie.Constants.*;
+
+@Slf4j
 public abstract class ExperimentStarter {
 
 
@@ -11,6 +17,7 @@ public abstract class ExperimentStarter {
 
     public ExperimentStarter() {
         this.name = getClass().getSimpleName();
+        STARTUP = MarkerFactory.getMarker("STARTUP");
         start();
     }
 
@@ -18,11 +25,11 @@ public abstract class ExperimentStarter {
     private void start() {
         ClockModifier.modifyClockMethod();
         org.cloudbus.cloudsim.Log.disable();
-        System.out.printf("Experiment %s starting...\n", name);
+        log.info(STARTUP, "{}: Starting...", name);
         this.seed = System.currentTimeMillis();
         try {
             run();
-            System.out.printf("Experiment %s run %.2fs\n", name, (System.currentTimeMillis() - seed) / 1000.0);
+            log.info(STARTUP, String.format("%s: Running %.2fs\n", name, (System.currentTimeMillis() - seed) / 1000.0));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -39,5 +46,6 @@ public abstract class ExperimentStarter {
             e.printStackTrace();
         }
     }
+
 
 }

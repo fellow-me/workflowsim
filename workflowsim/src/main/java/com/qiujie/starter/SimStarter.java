@@ -11,6 +11,7 @@ import com.qiujie.util.WorkflowParser;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.core.CloudSim;
@@ -23,6 +24,7 @@ import static com.qiujie.Constants.*;
 
 
 @Getter
+@Slf4j
 public class SimStarter {
     private static final AtomicInteger nextId = new AtomicInteger(0);
 
@@ -75,13 +77,13 @@ public class SimStarter {
 
 
     private void start() {
-        System.out.printf("Simulation %s starting...\n", name);
+        log.info(STARTUP, "{}: starting...", name);
         long start = System.currentTimeMillis();
         try {
             run();
             long end = System.currentTimeMillis();
             this.runtime = (end - start) / 1000.0;
-            System.out.printf("Simulation %s run %.2fs\n", name, runtime);
+            log.info(STARTUP, String.format("%s: Running %.2fs", name, runtime));
         } catch (Exception e) {
             e.printStackTrace();
         }

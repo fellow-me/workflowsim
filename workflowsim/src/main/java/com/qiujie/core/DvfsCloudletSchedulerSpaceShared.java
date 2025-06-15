@@ -2,9 +2,9 @@ package com.qiujie.core;
 
 import static com.qiujie.Constants.*;
 
-import cn.hutool.log.StaticLog;
 import com.qiujie.entity.Job;
 import com.qiujie.util.ExperimentUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.CloudletSchedulerSpaceShared;
 import org.cloudbus.cloudsim.Consts;
@@ -12,6 +12,7 @@ import org.cloudbus.cloudsim.core.CloudSim;
 
 import java.util.List;
 
+@Slf4j
 public class DvfsCloudletSchedulerSpaceShared extends CloudletSchedulerSpaceShared {
 
 
@@ -42,7 +43,7 @@ public class DvfsCloudletSchedulerSpaceShared extends CloudletSchedulerSpaceShar
             if (RANDOM.sample() < 1 - reliability && job.canRetry()) {
                 job.setCloudletLength(job.getCloudletFinishedSoFar() / Consts.MILLION + job.getLength());
                 job.updateRetryCount();
-                StaticLog.warn("{}: Retry {} for Job #{} {}", CloudSim.clock(), job.getRetryCount(), job.getCloudletId(), job.getName());
+                log.warn("{}: Retry {} for Job #{} {}", CloudSim.clock(), job.getRetryCount(), job.getCloudletId(), job.getName());
             }
         }
 
