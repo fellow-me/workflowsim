@@ -77,7 +77,7 @@ public class SimStarter {
 
 
     private void start() {
-        log.info(STARTUP, "{}: starting...", name);
+        log.info(STARTUP, "{}: Starting...", name);
         long start = System.currentTimeMillis();
         try {
             run();

@@ -24,6 +24,7 @@
 package com.qiujie.util;
 
 import ch.qos.logback.classic.Level;
+import com.qiujie.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,27 +32,30 @@ import org.slf4j.LoggerFactory;
  * A utility class to enable changing logging
  * configuration such as the logging level.
  *
- * @since CloudSim Plus 3.0.0
  * @author Manoel Campos da Silva Filho
+ * @since CloudSim Plus 3.0.0
  */
 public final class Log {
 
     /**
      * A private constructor to avoid class instantiation.
      */
-    private Log(){}
+    private Log() {
+    }
 
     /**
      * Sets the logging {@link Level} for a given logger instance.
      * You can enable just a specific type of log messages
      * by using, for example, {@link Level#WARN} value.
      * To completely disable the given logger, use {@link Level#OFF}.
+     *
      * @param level the logging level to set
      */
     public static void setLevel(final Logger logger, final Level level) {
         if (logger instanceof ch.qos.logback.classic.Logger logback)
             logback.setLevel(level);
-        else throw new IllegalArgumentException("The logger must be and instance of " + ch.qos.logback.classic.Logger.class.getName());
+        else
+            throw new IllegalArgumentException("The logger must be and instance of " + ch.qos.logback.classic.Logger.class.getName());
     }
 
     /**
@@ -59,9 +63,13 @@ public final class Log {
      * You can enable just a specific type of log messages
      * by using, for example, {@link Level#WARN} value.
      * To completely disable logging, use {@link Level#OFF}.
+     *
      * @param level the logging level to set
      */
-    public static void setLevel(final Level level){
+    public static void setLevel(final Level level) {
+        if (level == Level.OFF) {
+            Constants.ENABLE_STARTUP = false;
+        }
         final var root = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         setLevel(root, level);
     }
