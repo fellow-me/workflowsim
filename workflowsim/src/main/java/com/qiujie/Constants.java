@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Constants {
 
-    public static String SIM_NAME;
+    public static String SIM_NAME = "Sim";
 
     public static final int USERS = 1;
     public static final boolean TRACE_FLAG = false;
